@@ -8,12 +8,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.0",
+    "@types/react-redux": "^7.1.22",
     "draft-js": "^0.11.7",
+    "firebase": "^9.6.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-draft-wysiwyg": "^1.14.7",
     "react-icons": "^4.3.1",
-    "react-router-dom": "^6.2.1"
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^6.2.2"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.4.0",

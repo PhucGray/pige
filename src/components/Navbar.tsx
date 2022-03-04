@@ -4,7 +4,11 @@ import { MdArrowBack } from 'react-icons/md';
 import { useWindowSize } from '../app/hooks/useWindowSize';
 import { BsBookmark } from 'react-icons/bs';
 import { BiEdit } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
+import { useAppSelector } from '../app/hooks/reduxHooks';
+import { selectLoading, selectUser } from '../features/user/userSlice';
 
 const Navbar = () => {
   const [isSearching, setIsSearching] = useState(false);
@@ -15,12 +19,15 @@ const Navbar = () => {
   useEffect(() => {
     if (isLaptopUp) setIsSearching(false);
   }, [isLaptopUp]);
+  //
+  const user = useAppSelector(selectUser);
+  const loading = useAppSelector(selectLoading);
 
   return (
     <div
       className={`flex items-center justify-between min-h-[57px] border-b-[1px] ${
         isLaptopUp ? 'px-[40px] gap-[20px]' : 'px-[20px]'
-      }`}>
+      } sticky top-0 bg-white`}>
       {!isSearching && <Link to='/'>pige</Link>}
 
       {isSearching && (
@@ -62,29 +69,44 @@ const Navbar = () => {
         </button>
       </div>
 
-      {!isSearching && (
+      {!isSearching && !loading && (
         <>
-          <Link to='/sign-in' className='cursor-pointer hover:text-primary'>
-            Đăng nhập/ Đăng ký
-          </Link>
+          {!user && (
+            <Link to='/sign-in' className='cursor-pointer hover:text-primary'>
+              Đăng nhập/ Đăng ký
+            </Link>
+          )}
 
-          <div className='flex items-center gap-[10px]'>
-            <button className='w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-50'>
-              <BsBookmark size={25} />
-            </button>
-            <button className='w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-50'>
-              <Link to='/new-post'>
-                <BiEdit size={30} />
-              </Link>
-            </button>
-            <img
-              src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
-              alt='awf'
-              height={40}
-              width={40}
-              className='rounded-full'
-            />
-          </div>
+          {user && (
+            <>
+              <div className='flex items-center gap-[10px]'>
+                <button className='w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-50'>
+                  <BsBookmark size={25} />
+                </button>
+                <button className='w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-50'>
+                  <Link to='/new-post'>
+                    <BiEdit size={30} />
+                  </Link>
+                </button>
+                <img
+                  src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
+                  alt='awf'
+                  height={40}
+                  width={40}
+                  className='rounded-full'
+                />
+              </div>
+
+              <button
+                className='ring-1 ring-primary px-[20px] h-[60%] text-primary'
+                onClick={async () => {
+                  await signOut(auth);
+                  window.location.reload();
+                }}>
+                Đăng xuất
+              </button>
+            </>
+          )}
         </>
       )}
     </div>

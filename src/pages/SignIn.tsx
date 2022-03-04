@@ -1,15 +1,51 @@
-import { MdArrowBack } from 'react-icons/md';
+import { signInWithPopup } from 'firebase/auth';
 import { BsFacebook } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
-import { Link } from 'react-router-dom';
+import { MdArrowBack } from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../app/hooks/reduxHooks';
+import { setUser, User } from '../features/user/userSlice';
+import { auth, facebookProvider, googleProvider } from '../firebase';
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const signInWithGG = () =>
+    signInWithPopup(auth, googleProvider).then((res) => {
+      const { uid, displayName, email, photoURL } = res.user;
+
+      dispatch(
+        setUser({
+          uid,
+          displayName: displayName || '',
+          email: email || '',
+          photoURL: photoURL || '',
+        }),
+      );
+    });
+
+  const signInWithFB = () =>
+    signInWithPopup(auth, facebookProvider).then((res) => {
+      const { uid, displayName, email, photoURL } = res.user;
+
+      dispatch(
+        setUser({
+          uid,
+          displayName: displayName || '',
+          email: email || '',
+          photoURL: photoURL || '',
+        }),
+      );
+
+      navigate('/');
+    });
   return (
     <div className='pt-[20px] px-[20px] md:px-[40px]'>
-      <Link to='/'>
-        <a className='flex items-center gap-[10px] w-fit p-[10px] hover:bg-slate-50'>
-          <MdArrowBack /> Trở lại trang chủ
-        </a>
+      <Link
+        to='/'
+        className='flex items-center gap-[10px] w-fit p-[10px] hover:bg-slate-50'>
+        <MdArrowBack /> Trở lại trang chủ
       </Link>
 
       <form className='text-center max-w-[400px] mx-auto space-y-[15px]'>
@@ -20,10 +56,10 @@ const SignIn = () => {
           <input type='password' placeholder='Mật khẩu' />
         </div>
 
-        <Link to='forgot-password'>
-          <a className='mt-[10px] flex justify-end hover:text-primary'>
-            Quên mật khẩu ?
-          </a>
+        <Link
+          to='forgot-password'
+          className='mt-[10px] flex justify-end hover:text-primary'>
+          Quên mật khẩu ?
         </Link>
 
         <div>
@@ -40,11 +76,13 @@ const SignIn = () => {
 
         <div className='flex justify-center gap-[10px]'>
           <button
+            onClick={signInWithFB}
             type='button'
             className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
             <BsFacebook />
           </button>
           <button
+            onClick={signInWithGG}
             type='button'
             className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
             <FcGoogle />
@@ -53,10 +91,10 @@ const SignIn = () => {
 
         <div>
           Chưa có tài khoản ?
-          <Link to='/sign-up'>
-            <a className='ml-[10px] text-primary font-semibold hover:underline'>
-              Đăng ký
-            </a>
+          <Link
+            to='/sign-up'
+            className='ml-[10px] text-primary font-semibold hover:underline'>
+            Đăng ký
           </Link>
         </div>
       </form>

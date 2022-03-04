@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 const SignUp = () => {
   return (
     <div className='pt-[20px] px-[20px] md:px-[40px]'>
-      <Link to='/'>
-        <a className='flex items-center gap-[10px] w-fit p-[10px] hover:bg-slate-50'>
-          <MdArrowBack /> Trở lại trang chủ
-        </a>
+      <Link
+        to='/'
+        className='flex items-center gap-[10px] w-fit p-[10px] hover:bg-slate-50'>
+        <MdArrowBack /> Trở lại trang chủ
       </Link>
 
       <form className='text-center max-w-[400px] mx-auto space-y-[15px]'>
@@ -49,10 +49,10 @@ const SignUp = () => {
 
         <div>
           Chưa có tài khoản ?
-          <Link to='/sign-in'>
-            <a className='ml-[10px] text-primary font-semibold hover:underline'>
-              Đăng nhập
-            </a>
+          <Link
+            to='/sign-in'
+            className='ml-[10px] text-primary font-semibold hover:underline'>
+            Đăng nhập
           </Link>
         </div>
       </form>
