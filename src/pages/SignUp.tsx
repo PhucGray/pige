@@ -38,7 +38,7 @@ const SignUp = () => {
           <button
             type='button'
             className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-            <BsFacebook />
+            <BsFacebook color='#4267B2' />
           </button>
           <button
             type='button'

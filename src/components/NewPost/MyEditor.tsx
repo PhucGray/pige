@@ -21,6 +21,12 @@ import UnderlineIcon from '../../images/icons/underline.png';
 import UnorderedIcon from '../../images/icons/unordered.png';
 import '../../styles/toolbar.css';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../../app/hooks/reduxHooks';
+import { selectUser } from '../../features/user/userSlice';
+import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { db, postsCollectionRef } from '../../firebase';
+import { PostType } from '../../types';
+import { MdSaveAlt, MdOutlineDataSaverOff } from 'react-icons/md';
 
 const toolbar = {
   options: [
@@ -90,25 +96,73 @@ const toolbar = {
 };
 
 const MyEditor = () => {
+  const navigate = useNavigate();
+  const [postLoading, setPostLoading] = useState(false);
+  //
+
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   );
 
   const [title, setTitle] = useState('');
+  const [readTime, setReadTime] = useState(Number.NaN);
 
-  function handlePost() {
-    localStorage.setItem('content', JSON.stringify(editorState));
+  const user = useAppSelector(selectUser);
+
+  async function handlePost() {
+    setPostLoading(true);
 
     const content = convertToRaw(editorState.getCurrentContent());
 
-    console.log(content);
+    const newPost = {
+      uid: user?.uid,
+      content: content.blocks,
+      createdAt: new Date().toString(),
+      readTime,
+      title,
+    } as PostType;
+
+    const newPostDoc = await addDoc(postsCollectionRef, newPost);
+
+    if (user?.documentID) {
+      const userRef = doc(db, 'users', user.documentID);
+      await updateDoc(userRef, {
+        posts: arrayUnion(newPostDoc.id),
+      });
+    }
+
+    setEditorState(EditorState.createEmpty());
+    setReadTime(NaN);
+    setTitle('');
+
+    setPostLoading(false);
+
+    navigate('/');
+    window.location.reload();
   }
 
-  const navigate = useNavigate();
+  if (postLoading)
+    return (
+      <div className='fixed h-screen w-screen grid place-items-center bg-[#000000d1] z-50'>
+        <MdOutlineDataSaverOff
+          fontSize={40}
+          className='text-primary animate-spin'
+        />
+      </div>
+    );
 
   return (
     <>
       <div className='flex flex-wrap-reverse justify-between items-center gap-[20px] px-[40px] py-[10px]'>
+        <input
+          type='number'
+          placeholder='Thời gian đọc (phút)'
+          className='focus:ring-1 focus:ring-primary flex-1 max-w-[185px]'
+          value={readTime}
+          onChange={(e) => setReadTime(Number(e.target.value))}
+          required
+        />
+
         <input
           type='text'
           placeholder='Tiêu đề của bài viêt'

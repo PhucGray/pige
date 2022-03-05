@@ -1,42 +1,57 @@
-import { signInWithPopup } from 'firebase/auth';
+import {
+  getRedirectResult,
+  signInWithPopup,
+  signInWithRedirect,
+} from 'firebase/auth';
+import { addDoc } from 'firebase/firestore';
 import { BsFacebook } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
 import { MdArrowBack } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../app/hooks/reduxHooks';
 import { setUser, User } from '../features/user/userSlice';
-import { auth, facebookProvider, googleProvider } from '../firebase';
+import {
+  auth,
+  facebookProvider,
+  getUserWithUID,
+  googleProvider,
+  usersCollectionRef,
+} from '../firebase';
 
 const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const signInWithGG = () =>
-    signInWithPopup(auth, googleProvider).then((res) => {
+  const signInWithGG = async () =>
+    signInWithPopup(auth, googleProvider).then(async (res) => {
       const { uid, displayName, email, photoURL } = res.user;
 
-      dispatch(
-        setUser({
-          uid,
-          displayName: displayName || '',
-          email: email || '',
-          photoURL: photoURL || '',
-        }),
-      );
+      const existsUser = await getUserWithUID(uid);
+
+      if (!existsUser) {
+        const newUser = { uid, displayName, email, photoURL } as User;
+        const newUserDoc = await addDoc(usersCollectionRef, newUser);
+
+        dispatch(setUser({ ...newUser, documentID: newUserDoc.id }));
+      } else {
+        dispatch(setUser(existsUser));
+      }
+
+      navigate('/');
     });
 
   const signInWithFB = () =>
     signInWithPopup(auth, facebookProvider).then((res) => {
       const { uid, displayName, email, photoURL } = res.user;
 
-      dispatch(
-        setUser({
-          uid,
-          displayName: displayName || '',
-          email: email || '',
-          photoURL: photoURL || '',
-        }),
-      );
+      // dispatch(
+      //   setUser({
+      //     uid,
+      //     displayName: displayName || '',
+      //     email: email || '',
+      //     photoURL: photoURL || '',
+      //   }),
+      // );
 
       navigate('/');
     });
@@ -79,7 +94,7 @@ const SignIn = () => {
             onClick={signInWithFB}
             type='button'
             className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-            <BsFacebook />
+            <BsFacebook color='#4267B2' />
           </button>
           <button
             onClick={signInWithGG}

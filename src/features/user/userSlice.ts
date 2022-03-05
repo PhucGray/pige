@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 export interface User {
+  documentID?: string;
   email: string;
   displayName: string;
   photoURL: string;
   uid: string;
+  posts?: [];
 }
 
 interface UserProps {

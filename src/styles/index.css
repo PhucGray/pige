@@ -4,7 +4,26 @@
 
 @layer base {
   input[type='text'],
-  input[type='password'] {
+  input[type='password'],
+  input[type='number'] {
     @apply border-none ring-1 ring-gray-200 focus:ring-primary;
   }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply rounded-[20px] bg-slate-200;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-[20px] bg-primary;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-darkPrimary;
+  }
+
+  /*  */
 }

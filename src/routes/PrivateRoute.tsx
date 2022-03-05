@@ -8,7 +8,12 @@ const PrivateRoute: FC = ({ children }) => {
   const user = useAppSelector(selectUser);
   const loading = useAppSelector(selectLoading);
 
-  if (loading) return <Loading />;
+  if (loading)
+    return (
+      <div className='h-screen w-screen grid place-items-center'>
+        <Loading />
+      </div>
+    );
 
   if (!user) return <Navigate to='/sign-in' />;
 
