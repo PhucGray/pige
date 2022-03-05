@@ -1,9 +1,15 @@
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { MutableRefObject, useRef, useState } from 'react';
+import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { Editor, EditorProps } from 'react-draft-wysiwyg';
-import { ContentState, convertToRaw, EditorState } from 'draft-js';
-import { convertFromRaw } from 'draft-js';
-import { useWindowSize } from '../../app/hooks/useWindowSize';
+import { MdOutlineDataSaverOff } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
+import { fetchPosts } from '../../features/post/postSlice';
+import { selectUser } from '../../features/user/userSlice';
+import { db, postsCollectionRef } from '../../firebase';
 import BoldIcon from '../../images/icons/bold.png';
 import CenterIcon from '../../images/icons/center.png';
 import EmojiIcon from '../../images/icons/emoji.png';
@@ -20,13 +26,7 @@ import SuperscriptIcon from '../../images/icons/superscript.png';
 import UnderlineIcon from '../../images/icons/underline.png';
 import UnorderedIcon from '../../images/icons/unordered.png';
 import '../../styles/toolbar.css';
-import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks/reduxHooks';
-import { selectUser } from '../../features/user/userSlice';
-import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
-import { db, postsCollectionRef } from '../../firebase';
 import { PostType } from '../../types';
-import { MdSaveAlt, MdOutlineDataSaverOff } from 'react-icons/md';
 
 const toolbar = {
   options: [
@@ -95,14 +95,36 @@ const toolbar = {
   },
 };
 
+const content = {
+  entityMap: {},
+  blocks: [
+    {
+      key: '637gr',
+      text: 'Initialized from content state.',
+      type: 'unstyled',
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {},
+    },
+  ],
+};
+
 const MyEditor = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [postLoading, setPostLoading] = useState(false);
   //
+
+  const textareaRef = useRef() as MutableRefObject<HTMLTextAreaElement>;
 
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   );
+
+  function onEditorStateChange(editorState: EditorState) {
+    setEditorState(editorState);
+  }
 
   const [title, setTitle] = useState('');
   const [readTime, setReadTime] = useState(Number.NaN);
@@ -112,11 +134,13 @@ const MyEditor = () => {
   async function handlePost() {
     setPostLoading(true);
 
-    const content = convertToRaw(editorState.getCurrentContent());
+    if (editorState) {
+      console.log(editorState.getCurrentContent());
+    }
 
     const newPost = {
       uid: user?.uid,
-      content: content.blocks,
+      content: textareaRef.current.value,
       createdAt: new Date().toString(),
       readTime,
       title,
@@ -137,8 +161,8 @@ const MyEditor = () => {
 
     setPostLoading(false);
 
+    dispatch(fetchPosts());
     navigate('/');
-    window.location.reload();
   }
 
   if (postLoading)
@@ -153,6 +177,13 @@ const MyEditor = () => {
 
   return (
     <>
+      <textarea
+        ref={textareaRef}
+        className='fixed top-[-9999999999999999px]'
+        disabled
+        value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
+      />
+
       <div className='flex flex-wrap-reverse justify-between items-center gap-[20px] px-[40px] py-[10px]'>
         <input
           type='number'
@@ -188,7 +219,7 @@ const MyEditor = () => {
 
       <Editor
         editorState={editorState}
-        onEditorStateChange={setEditorState}
+        onEditorStateChange={onEditorStateChange}
         wrapperStyle={{
           overflow: 'auto',
           height: '100%',

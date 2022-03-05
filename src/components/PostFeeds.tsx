@@ -5,8 +5,10 @@ import moment from 'moment';
 import { getUserWithUID } from '../firebase';
 import { selectLoading } from '../features/user/userSlice';
 import Loading from './Loading';
+import { useNavigate } from 'react-router-dom';
 
 const PostFeeds = () => {
+  const navigate = useNavigate();
   const posts = useAppSelector(selectPosts);
   const loading = useAppSelector(selectLoading);
 
@@ -33,7 +35,7 @@ const PostFeeds = () => {
               <div
                 key={documentID}
                 className='border-b-[1px] mb-[30px] p-[10px] hover:shadow-md cursor-pointer'
-                onClick={() => {}}>
+                onClick={() => navigate(`/post/${documentID}`)}>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center gap-[10px]'>
                     <img

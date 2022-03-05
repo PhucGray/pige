@@ -53,28 +53,3 @@ export const getUserWithUID = async (uid: string) => {
 
   return userData;
 };
-
-export const getPosts = async () => {
-  const querySnapshot = await getDocs(postsCollectionRef);
-
-  let posts = [] as PostType[];
-
-  const p = querySnapshot.docs.map(async (doc) => {
-    const postData = doc.data() as PostType;
-
-    const userData = await getUserWithUID(postData.uid);
-
-    const post = {
-      ...doc.data(),
-      documentID: doc.id,
-      displayName: userData?.displayName,
-      photoURL: userData?.photoURL,
-    } as PostType;
-
-    return post;
-  });
-
-  // console.log('p: ' + (await p[0]).displayName);
-
-  return p;
-};

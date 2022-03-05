@@ -1,10 +1,10 @@
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from './app/hooks/reduxHooks';
+import { useAppDispatch } from './app/hooks/reduxHooks';
 import { NormalLayout } from './components/Layout';
 import { fetchPosts } from './features/post/postSlice';
-import { selectLoading, setLoading, setUser } from './features/user/userSlice';
+import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
 import Home from './pages/Home';
 import NewPost from './pages/NewPost';

@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getDocs } from 'firebase/firestore';
-import { revokeScope } from 'immer/dist/internal';
+import { doc, getDoc, getDocs } from 'firebase/firestore';
 import { RootState } from '../../app/store';
-import { getUserWithUID, postsCollectionRef } from '../../firebase';
+import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
 import { PostType } from '../../types';
 
 const getPosts = async () => {
@@ -31,18 +30,46 @@ const getPosts = async () => {
   );
 };
 
+const getPostByID = async (id: string) => {
+  const docRef = doc(db, 'posts', id);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const postData = docSnap.data() as PostType;
+    const userData = await getUserWithUID(postData.uid);
+
+    return {
+      ...postData,
+      documentID: id,
+      displayName: userData?.displayName,
+      photoURL: userData?.photoURL,
+    } as PostType;
+  }
+
+  return null;
+};
+
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   const posts = await getPosts();
-
   return posts;
 });
 
+export const fetchPostByID = createAsyncThunk(
+  'posts/fetchPostByID',
+  async (id: string) => {
+    const post = await getPostByID(id);
+    return post;
+  },
+);
+
 interface PostsProps {
   posts: PostType[];
+  currentPost: PostType | null;
 }
 
 const initialState: PostsProps = {
   posts: [],
+  currentPost: null,
 };
 
 const postSlice = createSlice({
@@ -54,14 +81,18 @@ const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Add reducers for additional action types here, and handle loading state as needed
-    builder.addCase(fetchPosts.fulfilled, (state, action: any) => {
+    builder.addCase(fetchPosts.fulfilled, (state, action) => {
       state.posts = action.payload;
+    });
+
+    builder.addCase(fetchPostByID.fulfilled, (state, action) => {
+      state.currentPost = action.payload;
     });
   },
 });
 
 export const { setPosts } = postSlice.actions;
 export const selectPosts = (state: RootState) => state.post.posts;
+export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 
 export default postSlice.reducer;

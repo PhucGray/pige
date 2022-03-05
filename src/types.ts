@@ -1,11 +1,13 @@
+import { ContentState, EditorState } from 'draft-js';
+
 export interface PostType {
-  documentID?: string;
   uid: string;
   title: string;
-  content: any;
+  content: string;
   createdAt: string;
   readTime: number;
 
+  documentID?: string;
   displayName?: string;
   photoURL?: string;
 }

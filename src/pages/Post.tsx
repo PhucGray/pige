@@ -1,109 +1,78 @@
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 import { BsBookmarkPlus } from 'react-icons/bs';
+import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Sidebar from '../components/Post/Sidebar';
+import { fetchPostByID, selectCurrentPost } from '../features/post/postSlice';
+import {
+  EditorState,
+  convertToRaw,
+  ContentState,
+  convertFromRaw,
+} from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 
 const Post = () => {
+  const dispatch = useAppDispatch();
+  const urlParams = useParams() as { id: string };
+
+  useEffect(() => {
+    dispatch(fetchPostByID(urlParams.id));
+  }, [urlParams.id]);
+
+  const currentPost = useAppSelector(selectCurrentPost);
+
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  );
+
+  useEffect(() => {
+    if (currentPost?.content) {
+      console.log(currentPost.content);
+    }
+  }, [currentPost]);
+
   return (
     <>
-      <div className='mt-[30px] mx-auto flex gap-[30px] px-[20px] max-w-[1200px]'>
-        <div>
-          <div className='flex items-center gap-[20px]'>
-            <img
-              src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
-              alt='awf'
-              height={40}
-              width={40}
-              className='rounded-full'
-            />
+      {currentPost && (
+        <div className='mt-[30px] mx-auto flex gap-[30px] px-[20px] w-full max-w-[1200px]'>
+          <div className='flex-1'>
+            <div className='flex items-center gap-[20px]'>
+              <img
+                src={currentPost.photoURL}
+                alt='awf'
+                height={40}
+                width={40}
+                className='rounded-full'
+              />
 
-            <div>
-              <div className='font-semibold'>Nguyễn Văn A</div>
-              <div className='flex items-center gap-[10px]'>
-                <div>12/08/2022</div>
-                <div>-</div>
-                <div>4 phút đọc</div>
+              <div>
+                <div className='font-semibold'>{currentPost.displayName}</div>
+                <div className='flex items-center gap-[10px]'>
+                  <div>{moment(currentPost.createdAt).format('L')}</div>
+                  <div>-</div>
+                  <div>{currentPost.readTime} phút đọc</div>
+                </div>
               </div>
+
+              <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
             </div>
 
-            <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
+            <div className='mt-[20px] text-[35px] font-semibold'>
+              {currentPost.title}
+            </div>
+
+            {/* {editorState && <Editor editorState={editorState} />} */}
+            <div
+              dangerouslySetInnerHTML={{ __html: currentPost?.content }}></div>
           </div>
 
-          <div className='mt-[20px] text-[35px] font-semibold'>
-            Bạn nên lưu JSON Web Token (JWT) ở đâu ?
-          </div>
-
-          <div className='mb-[20px]'>
-            <div className='text-[25px] font-semibold'>
-              Lorem Ipsum is simply dummy
-            </div>
-            <div>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry{'`'}s standard dummy
-              text ever since the 1500s, when an unknown printer took a galley
-              of type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged
-            </div>
-          </div>
-
-          <div className='mb-[20px]'>
-            <div className='text-[25px] font-semibold'>
-              Lorem Ipsum is simply dummy
-            </div>
-            <div>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry{'`'}s standard dummy
-              text ever since the 1500s, when an unknown printer took a galley
-              of type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged
-            </div>
-          </div>
-
-          <div className='mb-[20px]'>
-            <div className='text-[25px] font-semibold'>
-              Lorem Ipsum is simply dummy
-            </div>
-            <div>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry{'`'}s standard dummy
-              text ever since the 1500s, when an unknown printer took a galley
-              of type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged
-            </div>
-          </div>
-
-          <div className='mb-[20px]'>
-            <div className='text-[25px] font-semibold'>
-              Lorem Ipsum is simply dummy
-            </div>
-            <div>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry{'`'}s standard dummy
-              text ever since the 1500s, when an unknown printer took a galley
-              of type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged
-            </div>
-          </div>
-
-          <div className='mb-[20px]'>
-            <div className='text-[25px] font-semibold'>
-              Lorem Ipsum is simply dummy
-            </div>
-            <div>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry{'`'}s standard dummy
-              text ever since the 1500s, when an unknown printer took a galley
-              of type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged
-            </div>
-          </div>
+          <Sidebar />
         </div>
-
-        <Sidebar />
-      </div>
+      )}
     </>
   );
 };
