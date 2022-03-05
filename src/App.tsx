@@ -17,12 +17,15 @@ const App = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(fetchPosts());
+  }, []);
+
+  useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         const userData = await getUserWithUID(currentUser.uid);
 
         dispatch(setUser(userData));
-        dispatch(fetchPosts());
       } else {
         setUser(null);
       }
@@ -48,6 +51,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />
       </Routes>

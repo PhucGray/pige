@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { EditorState } from 'draft-js';
 import { doc, getDoc, getDocs } from 'firebase/firestore';
 import { RootState } from '../../app/store';
 import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
@@ -79,6 +80,9 @@ const postSlice = createSlice({
     setPosts: (state, { payload }: PayloadAction<PostType[]>) => {
       state.posts = payload;
     },
+    setCurrentPost: (state, { payload }: PayloadAction<PostType | null>) => {
+      state.currentPost = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
@@ -91,7 +95,7 @@ const postSlice = createSlice({
   },
 });
 
-export const { setPosts } = postSlice.actions;
+export const { setPosts, setCurrentPost } = postSlice.actions;
 export const selectPosts = (state: RootState) => state.post.posts;
 export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 

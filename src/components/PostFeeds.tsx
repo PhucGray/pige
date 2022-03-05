@@ -12,7 +12,7 @@ const PostFeeds = () => {
   const posts = useAppSelector(selectPosts);
   const loading = useAppSelector(selectLoading);
 
-  if (loading)
+  if (loading || posts.length === 0)
     return (
       <div className='flex-1 overflow-auto'>
         <Loading />
@@ -34,7 +34,7 @@ const PostFeeds = () => {
             return (
               <div
                 key={documentID}
-                className='border-b-[1px] mb-[30px] p-[10px] hover:shadow-md cursor-pointer'
+                className='border-b-[1px] mb-[30px] p-[10px] hover:bg-slate-100 cursor-pointer space-y-1'
                 onClick={() => navigate(`/post/${documentID}`)}>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center gap-[10px]'>
@@ -64,12 +64,6 @@ const PostFeeds = () => {
                 </div>
 
                 <div className='text-[20px] font-semibold'>{title}</div>
-
-                {/* <div>
-                  I have been designing and developing web applications for more
-                  than 7 years. Through these years, I have been seen a lot of
-                  authentication
-                </div> */}
 
                 <div className='font-semibold'>{readTime} phút đọc</div>
               </div>

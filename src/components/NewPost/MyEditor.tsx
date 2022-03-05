@@ -1,11 +1,11 @@
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { MutableRefObject, useRef, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { MdOutlineDataSaverOff } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { fetchPosts } from '../../features/post/postSlice';
 import { selectUser } from '../../features/user/userSlice';
@@ -37,6 +37,7 @@ const toolbar = {
     'emoji',
     'image',
     'history',
+    'blockType',
   ],
   inline: {
     inDropdown: false,
@@ -92,28 +93,15 @@ const toolbar = {
   },
   image: {
     icon: ImageIcon,
+    alignmentEnabled: false,
   },
-};
-
-const content = {
-  entityMap: {},
-  blocks: [
-    {
-      key: '637gr',
-      text: 'Initialized from content state.',
-      type: 'unstyled',
-      depth: 0,
-      inlineStyleRanges: [],
-      entityRanges: [],
-      data: {},
-    },
-  ],
 };
 
 const MyEditor = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [postLoading, setPostLoading] = useState(false);
+  const [preview, setPreview] = useState(false);
   //
 
   const textareaRef = useRef() as MutableRefObject<HTMLTextAreaElement>;
@@ -127,16 +115,12 @@ const MyEditor = () => {
   }
 
   const [title, setTitle] = useState('');
-  const [readTime, setReadTime] = useState(Number.NaN);
+  const [readTime, setReadTime] = useState('');
 
   const user = useAppSelector(selectUser);
 
   async function handlePost() {
     setPostLoading(true);
-
-    if (editorState) {
-      console.log(editorState.getCurrentContent());
-    }
 
     const newPost = {
       uid: user?.uid,
@@ -156,7 +140,7 @@ const MyEditor = () => {
     }
 
     setEditorState(EditorState.createEmpty());
-    setReadTime(NaN);
+    setReadTime('');
     setTitle('');
 
     setPostLoading(false);
@@ -167,7 +151,7 @@ const MyEditor = () => {
 
   if (postLoading)
     return (
-      <div className='fixed h-screen w-screen grid place-items-center bg-[#000000d1] z-50'>
+      <div className='fixed h-screen w-screen grid place-items-center bg-shadow z-50'>
         <MdOutlineDataSaverOff
           fontSize={40}
           className='text-primary animate-spin'
@@ -177,6 +161,39 @@ const MyEditor = () => {
 
   return (
     <>
+      {preview && (
+        <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-50 space-y-[10px]'>
+          <div className='flex justify-center space-x-3'>
+            <button
+              onClick={() => setPreview(false)}
+              className='w-[120px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary'>
+              Tiếp tục sửa
+            </button>
+            <button
+              onClick={handlePost}
+              className='w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
+              Đăng bài
+            </button>
+          </div>
+
+          <div className='bg-white h-[90%] w-screen overflow-auto'>
+            <div className='w-[90%] mx-auto'>
+              <div className='mt-[20px] text-[35px] font-semibold mb-[15px]'>
+                {title}
+              </div>
+
+              <div
+                className='content'
+                dangerouslySetInnerHTML={{
+                  __html: draftToHtml(
+                    convertToRaw(editorState.getCurrentContent()),
+                  ),
+                }}></div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <textarea
         ref={textareaRef}
         className='fixed top-[-9999999999999999px]'
@@ -190,7 +207,7 @@ const MyEditor = () => {
           placeholder='Thời gian đọc (phút)'
           className='focus:ring-1 focus:ring-primary flex-1 max-w-[185px]'
           value={readTime}
-          onChange={(e) => setReadTime(Number(e.target.value))}
+          onChange={(e) => setReadTime(e.target.value)}
           required
         />
 
@@ -209,6 +226,13 @@ const MyEditor = () => {
             className='w-[120px] h-[40px] text-primary ring-1 ring-primary hover:bg-lightPrimary'>
             Thoát
           </button>
+
+          <button
+            onClick={() => setPreview(true)}
+            className='w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600'>
+            Xem trước
+          </button>
+
           <button
             onClick={handlePost}
             className='w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>

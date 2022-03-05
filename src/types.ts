@@ -5,7 +5,7 @@ export interface PostType {
   title: string;
   content: string;
   createdAt: string;
-  readTime: number;
+  readTime: string;
 
   documentID?: string;
   displayName?: string;

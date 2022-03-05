@@ -1,23 +1,25 @@
+import { ContentState, convertToRaw, EditorState } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
+import { Editor } from 'react-draft-wysiwyg';
 import { BsBookmarkPlus } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
+import Loading from '../components/Loading';
 import Sidebar from '../components/Post/Sidebar';
-import { fetchPostByID, selectCurrentPost } from '../features/post/postSlice';
 import {
-  EditorState,
-  convertToRaw,
-  ContentState,
-  convertFromRaw,
-} from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
+  fetchPostByID,
+  selectCurrentPost,
+  setCurrentPost,
+} from '../features/post/postSlice';
 
 const Post = () => {
   const dispatch = useAppDispatch();
   const urlParams = useParams() as { id: string };
+
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
   useEffect(() => {
     dispatch(fetchPostByID(urlParams.id));
@@ -25,15 +27,30 @@ const Post = () => {
 
   const currentPost = useAppSelector(selectCurrentPost);
 
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty(),
-  );
+  useEffect(() => {
+    return () => {
+      dispatch(setCurrentPost(null));
+    };
+  }, []);
 
   useEffect(() => {
     if (currentPost?.content) {
-      console.log(currentPost.content);
+      const contentBlock = htmlToDraft(currentPost.content);
+
+      const contentState = ContentState.createFromBlockArray(
+        contentBlock.contentBlocks,
+      );
+      const editorState = EditorState.createWithContent(contentState);
+      setEditorState(editorState);
     }
   }, [currentPost]);
+
+  if (!currentPost)
+    return (
+      <div className='mt-[40px]'>
+        <Loading />
+      </div>
+    );
 
   return (
     <>
@@ -61,13 +78,25 @@ const Post = () => {
               <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
             </div>
 
-            <div className='mt-[20px] text-[35px] font-semibold'>
+            <div className='mt-[20px] text-[35px] font-semibold mb-[15px]'>
               {currentPost.title}
             </div>
 
-            {/* {editorState && <Editor editorState={editorState} />} */}
-            <div
-              dangerouslySetInnerHTML={{ __html: currentPost?.content }}></div>
+            {editorState && (
+              <Editor
+                toolbarHidden={true}
+                toolbar={{
+                  image: {
+                    alignmentEnabled: false,
+                  },
+                }}
+                editorState={editorState}
+                hashtag={{
+                  separator: ' ',
+                  trigger: '#',
+                }}
+              />
+            )}
           </div>
 
           <Sidebar />

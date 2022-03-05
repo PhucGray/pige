@@ -45,6 +45,21 @@
   height: 70%;
 }
 
+/* H1, H2 */
+.rdw-dropdown-optionwrapper {
+  min-width: fit-content;
+}
+
+.rdw-dropdownoption-default {
+  font-size: 20px;
+}
+
+.rdw-dropdownoption-default:hover,
+.rdw-dropdownoption-active {
+  background: rgb(151, 151, 151);
+  color: rgb(247, 247, 247);
+}
+
 /* emoji */
 
 .rdw-emoji-icon {
