@@ -8,7 +8,7 @@ const SignUp = () => {
     <div className='pt-[20px] px-[20px] md:px-[40px]'>
       <Link
         to='/'
-        className='flex items-center gap-[10px] w-fit p-[10px] hover:bg-slate-50'>
+        className='flex items-center gap-[10px] w-fit p-[10px] hover:bg-slate-100'>
         <MdArrowBack /> Trở lại trang chủ
       </Link>
 

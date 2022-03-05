@@ -15,7 +15,29 @@ const PostFeeds = () => {
   if (loading || posts.length === 0)
     return (
       <div className='flex-1 overflow-auto'>
-        <Loading />
+        {[...Array(3).keys()].map((number) => (
+          <div
+            key={number}
+            className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] space-y-1'>
+            <div className='flex flex-wrap items-center justify-between'>
+              <div className='flex items-center gap-[10px]'>
+                <div className='animate-pulse bg-gray-400 h-[40px] w-[40px] rounded-full'></div>
+
+                <div className='animate-pulse bg-gray-400 h-[24px] w-[250px]'></div>
+              </div>
+
+              <div className='animate-pulse bg-gray-400 h-[24px] w-[100px]'></div>
+            </div>
+
+            <div className='animate-pulse bg-gray-400 h-[30px] w-full'></div>
+
+            <div className='flex justify-between flex-wrap'>
+              <div className='animate-pulse bg-gray-400 h-[25px] w-[80px]'></div>
+
+              <div className='animate-pulse bg-gray-400 h-[25px] w-[25px]'></div>
+            </div>
+          </div>
+        ))}
       </div>
     );
 
@@ -34,9 +56,9 @@ const PostFeeds = () => {
             return (
               <div
                 key={documentID}
-                className='border-b-[1px] mb-[30px] p-[10px] hover:bg-slate-100 cursor-pointer space-y-1'
+                className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] hover:bg-slate-100 cursor-pointer space-y-1'
                 onClick={() => navigate(`/post/${documentID}`)}>
-                <div className='flex items-center justify-between'>
+                <div className='flex flex-wrap items-center justify-between'>
                   <div className='flex items-center gap-[10px]'>
                     <img
                       src={photoURL}
@@ -47,13 +69,17 @@ const PostFeeds = () => {
                     />
 
                     <div className='font-semibold'>{displayName}</div>
-
-                    <div>-</div>
-
-                    <div className='text-gray-400'>
-                      {moment(createdAt).format('L')}
-                    </div>
                   </div>
+
+                  <div className='text-gray-400'>
+                    {moment(createdAt).format('L')}
+                  </div>
+                </div>
+
+                <div className='text-[20px] font-semibold'>{title}</div>
+
+                <div className='flex justify-between flex-wrap'>
+                  <div className='font-semibold'>{readTime} phút đọc</div>
 
                   <BsBookmarkPlus
                     className='text-[22px] md:text-[25px] hover:scale-125'
@@ -62,134 +88,10 @@ const PostFeeds = () => {
                     }}
                   />
                 </div>
-
-                <div className='text-[20px] font-semibold'>{title}</div>
-
-                <div className='font-semibold'>{readTime} phút đọc</div>
               </div>
             );
           },
         )}
-
-      {/* <div
-        className='border-b-[1px] mb-[30px] p-[10px] hover:shadow-md cursor-pointer'
-        onClick={() => {}}>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-[10px]'>
-            <img
-              src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
-              alt='awf'
-              height={40}
-              width={40}
-              className='rounded-full'
-            />
-
-            <div className='font-semibold'>Nguyễn Văn A</div>
-
-            <div>-</div>
-
-            <div className='text-gray-400'>12/08/2022</div>
-          </div>
-
-          <BsBookmarkPlus
-            className='text-[22px] md:text-[25px] hover:scale-125'
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          />
-        </div>
-
-        <div className='text-[20px] font-semibold'>
-          Bạn nên lưu JSON Web Token (JWT) ở đâu ?
-        </div>
-
-        <div>
-          I have been designing and developing web applications for more than 7
-          years. Through these years, I have been seen a lot of authentication
-        </div>
-
-        <div className='font-semibold'>4 phút đọc</div>
-      </div>
-
-      <div
-        className='border-b-[1px] mb-[30px] p-[10px] hover:shadow-md cursor-pointer'
-        onClick={() => {}}>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-[10px]'>
-            <img
-              src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
-              alt='awf'
-              height={40}
-              width={40}
-              className='rounded-full'
-            />
-
-            <div className='font-semibold'>Nguyễn Văn A</div>
-
-            <div>-</div>
-
-            <div className='text-gray-400'>12/08/2022</div>
-          </div>
-
-          <BsBookmarkPlus
-            className='text-[22px] md:text-[25px] hover:scale-125'
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          />
-        </div>
-
-        <div className='text-[20px] font-semibold'>
-          Bạn nên lưu JSON Web Token (JWT) ở đâu ?
-        </div>
-
-        <div>
-          I have been designing and developing web applications for more than 7
-          years. Through these years, I have been seen a lot of authentication
-        </div>
-
-        <div className='font-semibold'>4 phút đọc</div>
-      </div>
-
-      <div
-        className='border-b-[1px] mb-[30px] p-[10px] hover:shadow-md cursor-pointer'
-        onClick={() => {}}>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-[10px]'>
-            <img
-              src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
-              alt='awf'
-              height={40}
-              width={40}
-              className='rounded-full'
-            />
-
-            <div className='font-semibold'>Nguyễn Văn A</div>
-
-            <div>-</div>
-
-            <div className='text-gray-400'>12/08/2022</div>
-          </div>
-
-          <BsBookmarkPlus
-            className='text-[22px] md:text-[25px] hover:scale-125'
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          />
-        </div>
-
-        <div className='text-[20px] font-semibold'>
-          Bạn nên lưu JSON Web Token (JWT) ở đâu ?
-        </div>
-
-        <div>
-          I have been designing and developing web applications for more than 7
-          years. Through these years, I have been seen a lot of authentication
-        </div>
-
-        <div className='font-semibold'>4 phút đọc</div>
-      </div> */}
     </div>
   );
 };

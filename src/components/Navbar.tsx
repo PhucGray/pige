@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
-import { BiSearch } from 'react-icons/bi';
-import { MdArrowBack, MdOutlineLogout } from 'react-icons/md';
-import { useWindowSize } from '../app/hooks/useWindowSize';
-import { BsBookmark } from 'react-icons/bs';
-import { BiEdit } from 'react-icons/bi';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
-import { useAppSelector } from '../app/hooks/reduxHooks';
-import { selectLoading, selectUser } from '../features/user/userSlice';
+import { useEffect, useState } from 'react';
+import { BiEdit, BiSearch } from 'react-icons/bi';
+import { BsBookmark } from 'react-icons/bs';
 import { CgFileDocument } from 'react-icons/cg';
+import { MdArrowBack, MdOutlineLogout } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from '../app/hooks/reduxHooks';
+import { useWindowSize } from '../app/hooks/useWindowSize';
+import { selectLoading, selectUser } from '../features/user/userSlice';
+import { auth } from '../firebase';
 
 const Navbar = () => {
   const [isSearching, setIsSearching] = useState(false);
@@ -30,15 +29,13 @@ const Navbar = () => {
         isLaptopUp ? 'px-[40px] gap-[20px]' : 'px-[20px]'
       } sticky top-0 bg-white`}>
       {!isSearching && <Link to='/'>pige</Link>}
-
       {isSearching && (
         <button
-          className='text-[24px] h-[45px] flex justify-center items-center w-[45px] hover:bg-slate-50'
+          className='rounded-[10px] text-[24px] h-[45px] flex justify-center items-center w-[45px] hover:bg-slate-100 mr-[3px]'
           onClick={() => setIsSearching(false)}>
           <MdArrowBack />
         </button>
       )}
-
       <div
         className={`flex flex-1 h-[45px] max-w-[500px] mr-[10px]
             ${
@@ -60,7 +57,7 @@ const Navbar = () => {
           className={`w-[45px] text-[24px] ${
             isSearching || isLaptopUp
               ? 'bg-primary text-white ring-primary ring-1'
-              : 'hover:bg-slate-50'
+              : 'hover:bg-slate-100 rounded-[10px]'
           }`}
           onClick={() => {
             if (isLaptopUp) return;
@@ -81,10 +78,10 @@ const Navbar = () => {
           {user && (
             <>
               <div className='flex items-center gap-[10px]'>
-                <button className='w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-50'>
+                <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
                   <BsBookmark size={25} />
                 </button>
-                <button className='w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-50'>
+                <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
                   <Link to='/new-post'>
                     <BiEdit size={30} />
                   </Link>
@@ -120,15 +117,6 @@ const Navbar = () => {
                   </div>
                 </div>
               </div>
-
-              {/* <button
-                className='ring-1 ring-primary px-[20px] h-[60%] text-primary'
-                onClick={async () => {
-                  await signOut(auth);
-                  window.location.reload();
-                }}>
-                Đăng xuất
-              </button> */}
             </>
           )}
         </>

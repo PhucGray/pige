@@ -229,7 +229,7 @@ const MyEditor = () => {
 
           <button
             onClick={() => setPreview(true)}
-            className='w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600'>
+            className='w-[120px] h-[40px] bg-slate-1000 text-white ring-1 ring-slate-1000 hover:bg-slate-600 hover:ring-slate-600'>
             Xem trước
           </button>
 
