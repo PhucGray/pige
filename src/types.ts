@@ -1,5 +1,3 @@
-import { ContentState, EditorState } from 'draft-js';
-
 export interface PostType {
   uid: string;
   title: string;
@@ -10,4 +8,9 @@ export interface PostType {
   documentID?: string;
   displayName?: string;
   photoURL?: string;
+}
+
+export interface Alert {
+  type: 'success' | 'error'
+  message: string;
 }

@@ -1,8 +1,10 @@
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useAppDispatch } from './app/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from './app/hooks/reduxHooks';
+import Alert from './components/Alert';
 import { NormalLayout } from './components/Layout';
+import { selectAlert } from './features/alert/alertSlice';
 import { fetchPosts } from './features/post/postSlice';
 import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
@@ -15,6 +17,7 @@ import PrivateRoute from './routes/PrivateRoute';
 
 const App = () => {
   const dispatch = useAppDispatch();
+  const alert = useAppSelector(selectAlert);
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -55,6 +58,8 @@ const App = () => {
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />
       </Routes>
+
+      {alert.show && <Alert />}
     </>
   );
 };

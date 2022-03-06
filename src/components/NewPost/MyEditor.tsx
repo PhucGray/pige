@@ -7,6 +7,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { MdOutlineDataSaverOff } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
+import { closeAlert, showAlert } from '../../features/alert/alertSlice';
 import { fetchPosts } from '../../features/post/postSlice';
 import { selectUser } from '../../features/user/userSlice';
 import { db, postsCollectionRef } from '../../firebase';
@@ -120,6 +121,26 @@ const MyEditor = () => {
   const user = useAppSelector(selectUser);
 
   async function handlePost() {
+    const content = textareaRef.current.value;
+
+    if (!title.trim())
+      return dispatch(
+        showAlert({ type: 'error', message: 'Vui lòng nhập tiêu đề bài viết' }),
+      );
+
+    if (!readTime.trim())
+      return dispatch(
+        showAlert({ type: 'error', message: 'Vui lòng nhập thời gian đọc' }),
+      );
+
+    if (!content.trim())
+      return dispatch(
+        showAlert({
+          type: 'error',
+          message: 'Vui lòng nhập nội dung cho bài viết',
+        }),
+      );
+
     setPostLoading(true);
 
     const newPost = {
@@ -146,6 +167,7 @@ const MyEditor = () => {
     setPostLoading(false);
 
     dispatch(fetchPosts());
+    dispatch(showAlert({ type: 'success', message: 'Thêm bài thành công' }));
     navigate('/');
   }
 
@@ -182,13 +204,19 @@ const MyEditor = () => {
                 {title}
               </div>
 
-              <div
-                className='content'
-                dangerouslySetInnerHTML={{
-                  __html: draftToHtml(
-                    convertToRaw(editorState.getCurrentContent()),
-                  ),
-                }}></div>
+              <Editor
+                toolbarHidden={true}
+                toolbar={{
+                  image: {
+                    alignmentEnabled: false,
+                  },
+                }}
+                editorState={editorState}
+                hashtag={{
+                  separator: ' ',
+                  trigger: '#',
+                }}
+              />
             </div>
           </div>
         </div>
@@ -229,7 +257,7 @@ const MyEditor = () => {
 
           <button
             onClick={() => setPreview(true)}
-            className='w-[120px] h-[40px] bg-slate-1000 text-white ring-1 ring-slate-1000 hover:bg-slate-600 hover:ring-slate-600'>
+            className='w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600'>
             Xem trước
           </button>
 
