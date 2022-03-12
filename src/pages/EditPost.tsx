@@ -1,11 +1,11 @@
 import MyEditor from '../components/NewPost/MyEditor';
 
-const NewPost = () => {
+const EditPost = () => {
   return (
     <div className='flex-1 flex flex-col overflow-hidden'>
-      <MyEditor action='add' />
+      <MyEditor action='edit' />
     </div>
   );
 };
 
-export default NewPost;
+export default EditPost;

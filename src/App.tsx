@@ -8,6 +8,7 @@ import { selectAlert } from './features/alert/alertSlice';
 import { fetchPosts } from './features/post/postSlice';
 import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
+import EditPost from './pages/EditPost';
 import Home from './pages/Home';
 import MyPost from './pages/MyPost';
 import NewPost from './pages/NewPost';
@@ -46,7 +47,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path='post/:id' element={<Post />} />
           <Route
-            path='my-post'
+            path='my-posts'
             element={
               <PrivateRoute>
                 <MyPost />
@@ -64,7 +65,16 @@ const App = () => {
           }
         />
 
-        {/* <Route path='my-post' element={} /> */}
+        <Route
+          path='edit-post'
+          element={
+            <PrivateRoute>
+              <EditPost />
+            </PrivateRoute>
+          }
+        />
+
+        {/* <Route path='my-posts' element={} /> */}
 
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />

@@ -1,14 +1,25 @@
-import { convertToRaw, EditorState } from 'draft-js';
+import {
+  ContentState,
+  convertFromHTML,
+  convertFromRaw,
+  convertToRaw,
+  EditorState,
+} from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
-import { MutableRefObject, useRef, useState } from 'react';
+import htmlToDraft from 'html-to-draftjs';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { MdOutlineDataSaverOff } from 'react-icons/md';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { closeAlert, showAlert } from '../../features/alert/alertSlice';
-import { fetchPosts } from '../../features/post/postSlice';
+import {
+  fetchPostByID,
+  fetchPosts,
+  selectCurrentPost,
+} from '../../features/post/postSlice';
 import { selectUser } from '../../features/user/userSlice';
 import { db, postsCollectionRef } from '../../firebase';
 import BoldIcon from '../../images/icons/bold.png';
@@ -28,6 +39,11 @@ import UnderlineIcon from '../../images/icons/underline.png';
 import UnorderedIcon from '../../images/icons/unordered.png';
 import '../../styles/toolbar.css';
 import { PostType } from '../../types';
+import Loading from '../Loading';
+
+interface EditorProps {
+  action: 'add' | 'edit';
+}
 
 const toolbar = {
   options: [
@@ -98,7 +114,7 @@ const toolbar = {
   },
 };
 
-const MyEditor = () => {
+const MyEditor = ({ action }: EditorProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -110,7 +126,6 @@ const MyEditor = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   );
-  const [postLoading, setPostLoading] = useState(false);
   const [preview, setPreview] = useState(false);
   const [title, setTitle] = useState('');
   const [readTime, setReadTime] = useState('');
@@ -140,8 +155,6 @@ const MyEditor = () => {
         }),
       );
 
-    setPostLoading(true);
-
     const newPost = {
       uid: user?.uid,
       content: textareaRef.current.value,
@@ -163,22 +176,83 @@ const MyEditor = () => {
     setReadTime('');
     setTitle('');
 
-    setPostLoading(false);
-
     dispatch(fetchPosts());
     dispatch(showAlert({ type: 'success', message: 'Thêm bài thành công' }));
     navigate('/');
   }
 
-  // if (postLoading)
-  //   return (
-  //     <div className='fixed h-screen w-screen grid place-items-center bg-shadow z-50'>
-  //       <MdOutlineDataSaverOff
-  //         fontSize={40}
-  //         className='text-primary animate-spin'
-  //       />
-  //     </div>
-  //   );
+  async function handleEdit() {
+    const content = textareaRef.current.value;
+
+    if (!title.trim())
+      return dispatch(
+        showAlert({ type: 'error', message: 'Vui lòng nhập tiêu đề bài viết' }),
+      );
+
+    if (!readTime.trim())
+      return dispatch(
+        showAlert({ type: 'error', message: 'Vui lòng nhập thời gian đọc' }),
+      );
+
+    if (!content.trim())
+      return dispatch(
+        showAlert({
+          type: 'error',
+          message: 'Vui lòng nhập nội dung cho bài viết',
+        }),
+      );
+
+    if (!currentPost?.documentID) return;
+
+    const postRef = doc(db, 'posts', currentPost.documentID);
+
+    await updateDoc(postRef, {
+      content: textareaRef.current.value,
+      readTime,
+      title,
+    });
+
+    setEditorState(EditorState.createEmpty());
+    setReadTime('');
+    setTitle('');
+
+    dispatch(fetchPosts());
+    dispatch(
+      showAlert({
+        type: 'success',
+        message:
+          action === 'add' ? 'Thêm bài thành công' : 'Sửa bài thành công',
+      }),
+    );
+    navigate('/my-posts');
+  }
+
+  const location = useLocation();
+
+  const currentPost = useAppSelector(selectCurrentPost);
+
+  useEffect(() => {
+    if (action === 'edit') {
+      const { id } = location.state as { id: string };
+      dispatch(fetchPostByID(id));
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (currentPost && currentPost.documentID) {
+      setTitle(currentPost.title);
+      setReadTime(currentPost.readTime);
+      textareaRef.current.value = currentPost.content;
+
+      const blocksFromHTML = convertFromHTML(currentPost.content);
+      const state = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap,
+      );
+
+      setEditorState(EditorState.createWithContent(state));
+    }
+  }, [currentPost]);
 
   return (
     <>
@@ -191,9 +265,9 @@ const MyEditor = () => {
               Tiếp tục sửa
             </button>
             <button
-              onClick={handlePost}
+              onClick={action === 'add' ? handlePost : handleEdit}
               className='w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
-              Đăng bài
+              {action === 'add' ? 'Đăng bài' : 'Sửa bài'}
             </button>
           </div>
 
@@ -221,14 +295,12 @@ const MyEditor = () => {
           </div>
         </div>
       )}
-
       <textarea
         ref={textareaRef}
         className='fixed top-[-9999999999999999px]'
         disabled
         value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
       />
-
       <div className='flex flex-wrap-reverse justify-between items-center gap-[20px] px-[40px] py-[10px]'>
         <input
           type='number'
@@ -250,7 +322,7 @@ const MyEditor = () => {
 
         <div className='space-x-4 ml-auto'>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             className='w-[120px] h-[40px] text-primary ring-1 ring-primary hover:bg-lightPrimary'>
             Thoát
           </button>
@@ -262,9 +334,9 @@ const MyEditor = () => {
           </button>
 
           <button
-            onClick={handlePost}
+            onClick={action === 'add' ? handlePost : handleEdit}
             className='w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
-            Đăng
+            {action === 'add' ? 'Đăng' : 'Sửa'}
           </button>
         </div>
       </div>

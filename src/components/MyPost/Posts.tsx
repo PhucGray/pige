@@ -5,7 +5,8 @@ import moment from 'moment';
 import { getUserWithUID } from '../../firebase';
 import { selectLoading } from '../../features/user/userSlice';
 import Loading from '../Loading';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 
 const Posts = () => {
   const navigate = useNavigate();
@@ -14,8 +15,8 @@ const Posts = () => {
 
   if (loading || posts.length === 0)
     return (
-      <div className='flex-1 overflow-auto'>
-        {[...Array(3).keys()].map((number) => (
+      <div>
+        {[...Array(4).keys()].map((number) => (
           <div
             key={number}
             className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] space-y-1'>
@@ -53,6 +54,21 @@ const Posts = () => {
               <div className='flex flex-wrap items-center justify-between'>
                 <div className='text-gray-400'>
                   {moment(createdAt).format('L')}
+                </div>
+
+                <div className='flex'>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate('/edit-post', { state: { id: documentID } });
+                    }}
+                    className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-300'>
+                    <AiOutlineEdit size={30} />
+                  </button>
+
+                  <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-300'>
+                    <AiOutlineDelete size={30} />
+                  </button>
                 </div>
               </div>
 
