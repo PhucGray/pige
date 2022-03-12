@@ -9,6 +9,7 @@ import { fetchPosts } from './features/post/postSlice';
 import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
 import Home from './pages/Home';
+import MyPost from './pages/MyPost';
 import NewPost from './pages/NewPost';
 import Post from './pages/Post';
 import SignIn from './pages/SignIn';
@@ -44,6 +45,14 @@ const App = () => {
         <Route path='/' element={<NormalLayout />}>
           <Route index element={<Home />} />
           <Route path='post/:id' element={<Post />} />
+          <Route
+            path='my-post'
+            element={
+              <PrivateRoute>
+                <MyPost />
+              </PrivateRoute>
+            }
+          />
         </Route>
 
         <Route
@@ -54,6 +63,8 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
+        {/* <Route path='my-post' element={} /> */}
 
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />

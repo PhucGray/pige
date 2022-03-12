@@ -1,10 +1,10 @@
 import { BsBookmarkPlus } from 'react-icons/bs';
-import { useAppSelector } from '../app/hooks/reduxHooks';
-import { selectPosts } from '../features/post/postSlice';
+import { useAppSelector } from '../../app/hooks/reduxHooks';
+import { selectPosts } from '../../features/post/postSlice';
 import moment from 'moment';
-import { getUserWithUID } from '../firebase';
-import { selectLoading } from '../features/user/userSlice';
-import Loading from './Loading';
+import { getUserWithUID } from '../../firebase';
+import { selectLoading } from '../../features/user/userSlice';
+import Loading from '../Loading';
 import { useNavigate } from 'react-router-dom';
 
 const PostFeeds = () => {

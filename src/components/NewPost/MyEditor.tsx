@@ -101,24 +101,23 @@ const toolbar = {
 const MyEditor = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [postLoading, setPostLoading] = useState(false);
-  const [preview, setPreview] = useState(false);
-  //
+
+  const user = useAppSelector(selectUser);
 
   const textareaRef = useRef() as MutableRefObject<HTMLTextAreaElement>;
+  const editorRef = useRef() as MutableRefObject<Editor>;
 
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   );
+  const [postLoading, setPostLoading] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [title, setTitle] = useState('');
+  const [readTime, setReadTime] = useState('');
 
   function onEditorStateChange(editorState: EditorState) {
     setEditorState(editorState);
   }
-
-  const [title, setTitle] = useState('');
-  const [readTime, setReadTime] = useState('');
-
-  const user = useAppSelector(selectUser);
 
   async function handlePost() {
     const content = textareaRef.current.value;
@@ -171,21 +170,21 @@ const MyEditor = () => {
     navigate('/');
   }
 
-  if (postLoading)
-    return (
-      <div className='fixed h-screen w-screen grid place-items-center bg-shadow z-50'>
-        <MdOutlineDataSaverOff
-          fontSize={40}
-          className='text-primary animate-spin'
-        />
-      </div>
-    );
+  // if (postLoading)
+  //   return (
+  //     <div className='fixed h-screen w-screen grid place-items-center bg-shadow z-50'>
+  //       <MdOutlineDataSaverOff
+  //         fontSize={40}
+  //         className='text-primary animate-spin'
+  //       />
+  //     </div>
+  //   );
 
   return (
     <>
       {preview && (
         <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-50 space-y-[10px]'>
-          <div className='flex justify-center space-x-3'>
+          <div className='flex justify-center space-x-3 mt-[10px]'>
             <button
               onClick={() => setPreview(false)}
               className='w-[120px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary'>
@@ -198,14 +197,15 @@ const MyEditor = () => {
             </button>
           </div>
 
-          <div className='bg-white h-[90%] w-screen overflow-auto'>
+          <div className='bg-white h-screen w-screen overflow-auto'>
             <div className='w-[90%] mx-auto'>
               <div className='mt-[20px] text-[35px] font-semibold mb-[15px]'>
                 {title}
               </div>
 
               <Editor
-                toolbarHidden={true}
+                toolbarHidden
+                readOnly
                 toolbar={{
                   image: {
                     alignmentEnabled: false,
@@ -270,6 +270,7 @@ const MyEditor = () => {
       </div>
 
       <Editor
+        ref={editorRef}
         editorState={editorState}
         onEditorStateChange={onEditorStateChange}
         wrapperStyle={{

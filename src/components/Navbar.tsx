@@ -97,12 +97,14 @@ const Navbar = () => {
                   />
 
                   <div className='absolute min-w-[240px] right-0 border bg-white py-[5px] rounded-lg hidden group-hover:block'>
-                    <div className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
+                    <Link
+                      to='/my-post'
+                      className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
                       <span className='min-w-[30px]'>
                         <CgFileDocument />
                       </span>
                       <span>Bài viết của bạn</span>
-                    </div>
+                    </Link>
                     <div
                       onClick={async () => {
                         await signOut(auth);

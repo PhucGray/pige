@@ -84,7 +84,8 @@ const Post = () => {
 
             {editorState && (
               <Editor
-                toolbarHidden={true}
+                toolbarHidden
+                readOnly
                 toolbar={{
                   image: {
                     alignmentEnabled: false,

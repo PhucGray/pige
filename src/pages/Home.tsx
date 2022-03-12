@@ -1,5 +1,5 @@
 import Sidebar from '../components/Home/Sidebar';
-import PostFeeds from '../components/PostFeeds';
+import PostFeeds from '../components/Home/PostFeeds';
 
 const Home = () => {
   return (
