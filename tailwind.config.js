@@ -11,8 +11,8 @@ module.exports = {
         shadow: '#000000d1',
       },
       animation: {
-        'count-down': 'count-down 4s linear',
-        disappear: 'disappear 0.5s 4s',
+        'count-down': 'count-down 3s linear forwards',
+        disappear: 'disappear 1s 3s ease-out forwards',
       },
       keyframes: {
         'count-down': {
@@ -21,9 +21,12 @@ module.exports = {
         },
         disappear: {
           '0%': { transform: 'translateX(-300px)' },
-          '50%': { transform: 'translateX(-200px)' },
-          '75%': { transform: 'translateX(0px)' },
-          '100%': { transform: 'translateX(100vw)' },
+          '50%': { transform: 'translateX(-200px)', opacity: 0.7 },
+          '75%': { transform: 'translateX(0px)', opacity: 0.3 },
+          '100%': {
+            transform: 'translateX(9999999999999px)',
+            opacity: 0,
+          },
         },
       },
     },

@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { RiCheckFill, RiCloseFill } from 'react-icons/ri';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { selectAlert, closeAlert } from '../features/alert/alertSlice';
@@ -9,11 +9,12 @@ const Alert = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      dispatch(closeAlert(false));
-    }, 4500);
+      dispatch(closeAlert());
+    }, 4000);
 
     return () => clearTimeout(timeout);
   }, []);
+
   return (
     <>
       <div
@@ -37,7 +38,7 @@ const Alert = () => {
         </div>
 
         <RiCloseFill
-          onClick={() => dispatch(closeAlert(false))}
+          onClick={() => dispatch(closeAlert())}
           className='absolute top-[10px] right-[10px] text-[30px] cursor-pointer'
         />
 

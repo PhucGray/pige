@@ -20,7 +20,7 @@ const alertSlice = createSlice({
       state.alert = payload;
       state.show = true;
     },
-    closeAlert: (state, { payload }: PayloadAction<boolean>) => {
+    closeAlert: (state) => {
       state.show = false;
       state.alert = null;
     },
