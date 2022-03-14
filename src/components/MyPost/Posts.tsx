@@ -1,24 +1,18 @@
-import { BsBookmarkPlus } from 'react-icons/bs';
-import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
-import { selectPosts, setPosts } from '../../features/post/postSlice';
-import moment from 'moment';
-import { db, getUserWithUID } from '../../firebase';
-import {
-  selectLoading,
-  selectUser,
-  setUser,
-} from '../../features/user/userSlice';
-import Loading from '../Loading';
-import { Link, useNavigate } from 'react-router-dom';
-import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import moment from 'moment';
+import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { showAlert } from '../../features/alert/alertSlice';
+import { selectPostsByUserID, setPosts } from '../../features/post/postSlice';
+import { selectLoading, selectUser } from '../../features/user/userSlice';
+import { db, getUserWithUID } from '../../firebase';
 
 const Posts = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const posts = useAppSelector(selectPosts);
+  const posts = useAppSelector(selectPostsByUserID);
   const loading = useAppSelector(selectLoading);
   const user = useAppSelector(selectUser);
 
@@ -44,7 +38,7 @@ const Posts = () => {
     }
   }
 
-  if (loading || posts.length === 0)
+  if (loading)
     return (
       <div>
         {[...Array(4).keys()].map((number) => (
@@ -72,6 +66,9 @@ const Posts = () => {
         ))}
       </div>
     );
+
+  if (!user?.posts || user?.posts?.length === 0)
+    return <div className='text-center'>Bạn chưa có bài viết nào</div>;
 
   return (
     <div className='flex-1 overflow-auto'>
