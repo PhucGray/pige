@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { showAlert } from '../../features/alert/alertSlice';
 import {
+  selectPosts,
   selectPostsByUserID,
   setPosts,
   setPostsByUserID,
@@ -16,7 +17,9 @@ const Posts = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const posts = useAppSelector(selectPostsByUserID);
+  const postsByUserID = useAppSelector(selectPostsByUserID);
+  const posts = useAppSelector(selectPosts);
+
   const loading = useAppSelector(selectLoading);
   const user = useAppSelector(selectUser);
 
@@ -34,8 +37,12 @@ const Posts = () => {
         await deleteDoc(doc(db, 'posts', postID));
 
         dispatch(
-          setPostsByUserID([...posts].filter((p) => p.documentID !== postID)),
+          setPostsByUserID(
+            [...postsByUserID].filter((p) => p.documentID !== postID),
+          ),
         );
+
+        dispatch(setPosts([...posts].filter((p) => p.documentID !== postID)));
 
         dispatch(
           showAlert({ type: 'success', message: 'Xoá bài viết thành công' }),
@@ -73,13 +80,13 @@ const Posts = () => {
       </div>
     );
 
-  if (!user?.posts || user?.posts?.length === 0)
+  if (postsByUserID.length === 0)
     return <div className='text-center'>Bạn chưa có bài viết nào</div>;
 
   return (
     <div className='flex-1 overflow-auto'>
-      {posts &&
-        posts.map(({ createdAt, readTime, title, documentID }) => {
+      {postsByUserID &&
+        postsByUserID.map(({ createdAt, readTime, title, documentID }) => {
           return (
             <div
               key={documentID}

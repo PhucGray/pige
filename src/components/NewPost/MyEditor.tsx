@@ -15,26 +15,14 @@ import { showAlert } from '../../features/alert/alertSlice';
 import {
   fetchPostByID,
   fetchPosts,
+  fetchPostsByUserID,
   selectCurrentPost,
+  selectPostsByUserID,
   setCurrentPost,
+  setPostsByUserID,
 } from '../../features/post/postSlice';
-import { selectUser } from '../../features/user/userSlice';
-import { db, postsCollectionRef } from '../../firebase';
-import BoldIcon from '../../images/icons/bold.png';
-import CenterIcon from '../../images/icons/center.png';
-import EmojiIcon from '../../images/icons/emoji.png';
-import ImageIcon from '../../images/icons/image.png';
-import ItalicIcon from '../../images/icons/italic.png';
-import JustifyIcon from '../../images/icons/justify.png';
-import LeftIcon from '../../images/icons/left.png';
-import MonospaceIcon from '../../images/icons/monospace.png';
-import OrderedIcon from '../../images/icons/ordered.png';
-import RightIcon from '../../images/icons/right.png';
-import StrikeThroughIcon from '../../images/icons/strikethrough.png';
-import SubscriptIcon from '../../images/icons/subscript.png';
-import SuperscriptIcon from '../../images/icons/superscript.png';
-import UnderlineIcon from '../../images/icons/underline.png';
-import UnorderedIcon from '../../images/icons/unordered.png';
+import { selectUser, setUser } from '../../features/user/userSlice';
+import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
 import '../../styles/toolbar.css';
 import { PostType } from '../../types';
 
@@ -65,24 +53,24 @@ const toolbar = {
       'subscript',
     ],
     bold: {
-      icon: BoldIcon,
+      icon: '/bold.png',
     },
-    italic: { icon: ItalicIcon },
-    underline: { icon: UnderlineIcon },
-    strikethrough: { icon: StrikeThroughIcon },
-    monospace: { icon: MonospaceIcon },
-    superscript: { icon: SuperscriptIcon },
-    subscript: { icon: SubscriptIcon },
+    italic: { icon: '/italic.png' },
+    underline: { icon: '/underline.png' },
+    strikethrough: { icon: '/strikethrough.png' },
+    monospace: { icon: '/monospace.png' },
+    superscript: { icon: '/superscript.png' },
+    subscript: { icon: '/subscript.png' },
   },
   emoji: {
-    icon: EmojiIcon,
+    icon: '/emoji.png',
   },
   list: {
     unordered: {
-      icon: UnorderedIcon,
+      icon: '/unordered.png',
     },
     ordered: {
-      icon: OrderedIcon,
+      icon: '/ordered.png',
     },
     indent: {
       className: 'd-none',
@@ -93,21 +81,29 @@ const toolbar = {
   },
   textAlign: {
     left: {
-      icon: LeftIcon,
+      icon: '/left.png',
     },
     right: {
-      icon: RightIcon,
+      icon: '/right.png',
     },
     center: {
-      icon: CenterIcon,
+      icon: '/center.png',
     },
     justify: {
-      icon: JustifyIcon,
+      icon: '/justify.png',
     },
   },
   image: {
-    icon: ImageIcon,
+    icon: '/image.png',
     alignmentEnabled: false,
+  },
+  blockType: {
+    inDropdown: true,
+    options: ['Normal', 'H1', 'H2', 'Blockquote', 'Code'],
+    className: 'blockType',
+    // className: undefined,
+    // component: undefined,
+    // dropdownClassName: undefined,
   },
 };
 
@@ -116,6 +112,7 @@ const MyEditor = ({ action }: EditorProps) => {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector(selectUser);
+  const postsByUserID = useAppSelector(selectPostsByUserID);
 
   const textareaRef = useRef() as MutableRefObject<HTMLTextAreaElement>;
   const editorRef = useRef() as MutableRefObject<Editor>;
@@ -169,13 +166,19 @@ const MyEditor = ({ action }: EditorProps) => {
       });
     }
 
+    if (user) {
+      dispatch(
+        setUser({ ...user, posts: [...(user.posts || []), newPostDoc.id] }),
+      );
+    }
+
     setEditorState(EditorState.createEmpty());
     setReadTime('');
     setTitle('');
 
     dispatch(fetchPosts());
+
     dispatch(showAlert({ type: 'success', message: 'Thêm bài thành công' }));
-    navigate('/');
   }
 
   async function handleEdit() {

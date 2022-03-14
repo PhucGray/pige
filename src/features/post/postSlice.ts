@@ -1,10 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { doc, getDoc, getDocs } from 'firebase/firestore';
-import { useAppSelector } from '../../app/hooks/reduxHooks';
 import { RootState } from '../../app/store';
 import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
 import { PostType } from '../../types';
-import { selectUser, User } from '../user/userSlice';
+import { User } from '../user/userSlice';
 
 const getPosts = async () => {
   const querySnapshot = await getDocs(postsCollectionRef);
@@ -94,8 +93,8 @@ export const fetchPostByID = createAsyncThunk(
 export const fetchPostsByUserID = createAsyncThunk(
   'posts/fetchPostsByUserID',
   async (user: User) => {
-    const post = await getPostsByUserID(user);
-    return post;
+    const posts = await getPostsByUserID(user);
+    return posts;
   },
 );
 

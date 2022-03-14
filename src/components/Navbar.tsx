@@ -5,12 +5,19 @@ import { BsBookmark } from 'react-icons/bs';
 import { CgFileDocument } from 'react-icons/cg';
 import { MdArrowBack, MdOutlineLogout } from 'react-icons/md';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../app/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { useWindowSize } from '../app/hooks/useWindowSize';
-import { selectLoading, selectUser } from '../features/user/userSlice';
+import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
 import { auth } from '../firebase';
+import Loading from './Loading';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const user = useAppSelector(selectUser);
+  const loading = useAppSelector(selectLoading);
+
   const [isSearching, setIsSearching] = useState(false);
 
   const size = useWindowSize();
@@ -19,11 +26,7 @@ const Navbar = () => {
   useEffect(() => {
     if (isLaptopUp) setIsSearching(false);
   }, [isLaptopUp]);
-  //
-  const user = useAppSelector(selectUser);
-  const loading = useAppSelector(selectLoading);
 
-  const navigate = useNavigate();
   return (
     <div
       className={`flex items-center justify-between min-h-[57px] z-50 border-b-[1px] ${
@@ -68,6 +71,8 @@ const Navbar = () => {
         </button>
       </div>
 
+      {loading && <>.</>}
+
       {!isSearching && !loading && (
         <>
           {!user && (
@@ -109,7 +114,8 @@ const Navbar = () => {
                     <div
                       onClick={async () => {
                         await signOut(auth);
-                        window.location.reload();
+                        navigate('/sign-in');
+                        dispatch(setUser(null));
                       }}
                       className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
                       <span className='min-w-[30px]'>
