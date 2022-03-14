@@ -1,17 +1,48 @@
 import { BsBookmarkPlus } from 'react-icons/bs';
-import { useAppSelector } from '../../app/hooks/reduxHooks';
-import { selectPosts } from '../../features/post/postSlice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
+import { selectPosts, setPosts } from '../../features/post/postSlice';
 import moment from 'moment';
-import { getUserWithUID } from '../../firebase';
-import { selectLoading } from '../../features/user/userSlice';
+import { db, getUserWithUID } from '../../firebase';
+import {
+  selectLoading,
+  selectUser,
+  setUser,
+} from '../../features/user/userSlice';
 import Loading from '../Loading';
 import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { showAlert } from '../../features/alert/alertSlice';
 
 const Posts = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const posts = useAppSelector(selectPosts);
   const loading = useAppSelector(selectLoading);
+  const user = useAppSelector(selectUser);
+
+  async function handleDeleteClick(postID?: string) {
+    if (confirm(`Bạn có chắc chắn muốn xoá bài viết`)) {
+      const userData = await getUserWithUID(user?.uid || '');
+
+      const newPosts = userData?.posts?.filter((postID) => postID !== postID);
+
+      if (newPosts && postID && user?.documentID) {
+        await updateDoc(doc(db, 'users', user.documentID), {
+          posts: newPosts,
+        });
+
+        await deleteDoc(doc(db, 'posts', postID));
+
+        dispatch(setPosts([...posts].filter((p) => p.documentID !== postID)));
+
+        dispatch(
+          showAlert({ type: 'success', message: 'Xoá bài viết thành công' }),
+        );
+      }
+    }
+  }
 
   if (loading || posts.length === 0)
     return (
@@ -66,7 +97,12 @@ const Posts = () => {
                     <AiOutlineEdit size={30} />
                   </button>
 
-                  <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-300'>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(documentID);
+                    }}
+                    className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-300'>
                     <AiOutlineDelete size={30} />
                   </button>
                 </div>
