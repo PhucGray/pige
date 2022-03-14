@@ -10,7 +10,7 @@ import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
 import EditPost from './pages/EditPost';
 import Home from './pages/Home';
-import MyPost from './pages/MyPost';
+import MyPost from './pages/MyPosts';
 import NewPost from './pages/NewPost';
 import Post from './pages/Post';
 import SignIn from './pages/SignIn';
@@ -73,8 +73,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-
-        {/* <Route path='my-posts' element={} /> */}
 
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />

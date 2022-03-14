@@ -43,8 +43,6 @@ const getPostsByUserID = async (user: User) => {
     const postData = docs[i].data() as PostType;
     const postID = docs[i].id;
 
-   
-
     if (user && user.posts?.includes(postID)) {
       posts.push({
         ...postData,
@@ -123,6 +121,9 @@ const postSlice = createSlice({
     setCurrentPost: (state, { payload }: PayloadAction<PostType | null>) => {
       state.currentPost = payload;
     },
+    setPostsByUserID: (state, { payload }: PayloadAction<PostType[]>) => {
+      state.postsByUserID = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
@@ -139,7 +140,7 @@ const postSlice = createSlice({
   },
 });
 
-export const { setPosts, setCurrentPost } = postSlice.actions;
+export const { setPosts, setCurrentPost, setPostsByUserID } = postSlice.actions;
 export const selectPosts = (state: RootState) => state.post.posts;
 export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>

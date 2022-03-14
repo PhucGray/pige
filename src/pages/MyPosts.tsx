@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
-import Posts from '../components/MyPost/Posts';
+import Posts from '../components/MyPosts/Posts';
 import { fetchPostsByUserID } from '../features/post/postSlice';
 import { selectUser } from '../features/user/userSlice';
 
-const MyPost = () => {
+const MyPosts = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   useEffect(() => {
@@ -28,4 +28,4 @@ const MyPost = () => {
   );
 };
 
-export default MyPost;
+export default MyPosts;

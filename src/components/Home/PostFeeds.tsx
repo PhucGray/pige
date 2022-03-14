@@ -12,7 +12,7 @@ const PostFeeds = () => {
   const posts = useAppSelector(selectPosts);
   const loading = useAppSelector(selectLoading);
 
-  if (loading || posts.length === 0)
+  if (loading)
     return (
       <div className='flex-1 overflow-auto'>
         {[...Array(3).keys()].map((number) => (
@@ -40,6 +40,9 @@ const PostFeeds = () => {
         ))}
       </div>
     );
+
+  if (posts.length === 0)
+    return <div className='text-center flex-1'>Chưa có bài viết nào</div>;
 
   return (
     <div className='flex-1 overflow-auto'>

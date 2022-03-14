@@ -4,7 +4,11 @@ import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { showAlert } from '../../features/alert/alertSlice';
-import { selectPostsByUserID, setPosts } from '../../features/post/postSlice';
+import {
+  selectPostsByUserID,
+  setPosts,
+  setPostsByUserID,
+} from '../../features/post/postSlice';
 import { selectLoading, selectUser } from '../../features/user/userSlice';
 import { db, getUserWithUID } from '../../firebase';
 
@@ -29,7 +33,9 @@ const Posts = () => {
 
         await deleteDoc(doc(db, 'posts', postID));
 
-        dispatch(setPosts([...posts].filter((p) => p.documentID !== postID)));
+        dispatch(
+          setPostsByUserID([...posts].filter((p) => p.documentID !== postID)),
+        );
 
         dispatch(
           showAlert({ type: 'success', message: 'Xoá bài viết thành công' }),

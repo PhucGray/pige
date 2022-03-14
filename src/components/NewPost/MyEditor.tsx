@@ -1,24 +1,22 @@
 import {
   ContentState,
   convertFromHTML,
-  convertFromRaw,
   convertToRaw,
   EditorState,
 } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
-import htmlToDraft from 'html-to-draftjs';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { MdOutlineDataSaverOff } from 'react-icons/md';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
-import { closeAlert, showAlert } from '../../features/alert/alertSlice';
+import { showAlert } from '../../features/alert/alertSlice';
 import {
   fetchPostByID,
   fetchPosts,
   selectCurrentPost,
+  setCurrentPost,
 } from '../../features/post/postSlice';
 import { selectUser } from '../../features/user/userSlice';
 import { db, postsCollectionRef } from '../../firebase';
@@ -39,7 +37,6 @@ import UnderlineIcon from '../../images/icons/underline.png';
 import UnorderedIcon from '../../images/icons/unordered.png';
 import '../../styles/toolbar.css';
 import { PostType } from '../../types';
-import Loading from '../Loading';
 
 interface EditorProps {
   action: 'add' | 'edit';
@@ -254,6 +251,12 @@ const MyEditor = ({ action }: EditorProps) => {
     }
   }, [currentPost]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(setCurrentPost(null));
+    };
+  }, []);
+
   return (
     <>
       {preview && (
@@ -295,15 +298,31 @@ const MyEditor = ({ action }: EditorProps) => {
           </div>
         </div>
       )}
-      <textarea
-        ref={textareaRef}
-        className='fixed top-[-9999999999999999px]'
-        disabled
-        value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
-      />
+
       <div className='flex flex-wrap-reverse justify-between items-center gap-[20px] px-[40px] py-[10px]'>
         <input
           type='number'
+          min='0'
+          onKeyDown={(e) => {
+            if (
+              ![
+                '0',
+                '1',
+                '2',
+                '3',
+                '4',
+                '5',
+                '6',
+                '7',
+                '8',
+                '9',
+                'Backspace',
+                'ArrowLeft',
+                'ArrowRight',
+              ].includes(e.key)
+            )
+              e.preventDefault();
+          }}
           placeholder='Thời gian đọc (phút)'
           className='focus:ring-1 focus:ring-primary flex-1 max-w-[185px]'
           value={readTime}
@@ -359,6 +378,13 @@ const MyEditor = ({ action }: EditorProps) => {
         hashtag={{
           trigger: '#',
         }}
+      />
+
+      <textarea
+        ref={textareaRef}
+        className='fixed top-[-100vh] opacity-0'
+        disabled
+        value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
       />
     </>
   );

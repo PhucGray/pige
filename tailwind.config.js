@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
@@ -26,5 +28,13 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    plugin(function ({ addBase, theme }) {
+      addBase({
+        h1: { fontWeight: 'bold', fontSize: '22px' },
+        h2: { fontWeight: 'bold', fontSize: '18px' },
+      });
+    }),
+  ],
 };
