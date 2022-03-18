@@ -11,8 +11,8 @@ module.exports = {
         shadow: '#000000d1',
       },
       animation: {
-        'count-down': 'count-down 3s linear forwards',
-        disappear: 'disappear 1s 3s ease-out forwards',
+        'count-down': 'count-down 4s linear forwards',
+        disappear: 'disappear 1s 4s ease-out forwards',
       },
       keyframes: {
         'count-down': {

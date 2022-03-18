@@ -15,14 +15,11 @@ import { showAlert } from '../../features/alert/alertSlice';
 import {
   fetchPostByID,
   fetchPosts,
-  fetchPostsByUserID,
   selectCurrentPost,
-  selectPostsByUserID,
   setCurrentPost,
-  setPostsByUserID,
 } from '../../features/post/postSlice';
 import { selectUser, setUser } from '../../features/user/userSlice';
-import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
+import { db, postsCollectionRef } from '../../firebase';
 import '../../styles/toolbar.css';
 import { PostType } from '../../types';
 
@@ -110,9 +107,10 @@ const toolbar = {
 const MyEditor = ({ action }: EditorProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
+  const currentPost = useAppSelector(selectCurrentPost);
   const user = useAppSelector(selectUser);
-  const postsByUserID = useAppSelector(selectPostsByUserID);
 
   const textareaRef = useRef() as MutableRefObject<HTMLTextAreaElement>;
   const editorRef = useRef() as MutableRefObject<Editor>;
@@ -227,10 +225,7 @@ const MyEditor = ({ action }: EditorProps) => {
     navigate('/my-posts');
   }
 
-  const location = useLocation();
-
-  const currentPost = useAppSelector(selectCurrentPost);
-
+  // EDIT POST
   useEffect(() => {
     if (action === 'edit') {
       const { id } = location.state as { id: string };
@@ -345,19 +340,19 @@ const MyEditor = ({ action }: EditorProps) => {
         <div className='space-x-4 ml-auto'>
           <button
             onClick={() => navigate(-1)}
-            className='w-[120px] h-[40px] text-primary ring-1 ring-primary hover:bg-lightPrimary'>
+            className='rounded-[5px] w-[120px] h-[40px] text-primary ring-1 ring-primary hover:bg-lightPrimary'>
             Thoát
           </button>
 
           <button
             onClick={() => setPreview(true)}
-            className='w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600'>
+            className='rounded-[5px] w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600'>
             Xem trước
           </button>
 
           <button
             onClick={action === 'add' ? handlePost : handleEdit}
-            className='w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
+            className='rounded-[5px] w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
             {action === 'add' ? 'Đăng' : 'Sửa'}
           </button>
         </div>

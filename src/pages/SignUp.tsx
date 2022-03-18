@@ -1,7 +1,6 @@
 import { MdArrowBack } from 'react-icons/md';
-import { BsFacebook } from 'react-icons/bs';
-import { FcGoogle } from 'react-icons/fc';
 import { Link } from 'react-router-dom';
+import SignInWithSocial from '../components/SignInWithSocial';
 
 const SignUp = () => {
   return (
@@ -34,18 +33,7 @@ const SignUp = () => {
           <div className='bg-slate-400 h-[1px] flex-1'></div>
         </div>
 
-        <div className='flex justify-center gap-[10px]'>
-          <button
-            type='button'
-            className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-            <BsFacebook color='#4267B2' />
-          </button>
-          <button
-            type='button'
-            className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-            <FcGoogle />
-          </button>
-        </div>
+        <SignInWithSocial />
 
         <div>
           Chưa có tài khoản ?

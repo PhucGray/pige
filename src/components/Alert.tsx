@@ -10,7 +10,7 @@ const Alert = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       dispatch(closeAlert());
-    }, 4000);
+    }, 5000);
 
     return () => clearTimeout(timeout);
   }, []);
@@ -32,7 +32,6 @@ const Alert = () => {
           <div className='text-[25px] font-bold'>
             {alert.alert?.type === 'success' && 'Thông báo !'}
             {alert.alert?.type === 'error' && 'Lỗi !'}
-            {/* Lỗi ! */}
           </div>
           <div>{alert.alert?.message}</div>
         </div>

@@ -3,11 +3,12 @@ import { RootState } from '../../app/store';
 
 export interface User {
   documentID?: string;
+
+  uid: string;
   email: string;
   displayName: string;
   photoURL: string;
-  uid: string;
-  posts?: string[];
+  posts: string[];
 }
 
 interface UserProps {

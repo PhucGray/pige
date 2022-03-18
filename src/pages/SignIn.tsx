@@ -1,60 +1,8 @@
-import {
-  getRedirectResult,
-  signInWithPopup,
-  signInWithRedirect,
-} from 'firebase/auth';
-import { addDoc } from 'firebase/firestore';
-import { BsFacebook } from 'react-icons/bs';
-import { FcGoogle } from 'react-icons/fc';
 import { MdArrowBack } from 'react-icons/md';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../app/hooks/reduxHooks';
-import { setUser, User } from '../features/user/userSlice';
-import {
-  auth,
-  facebookProvider,
-  getUserWithUID,
-  googleProvider,
-  usersCollectionRef,
-} from '../firebase';
+import { Link } from 'react-router-dom';
+import SignInWithSocial from '../components/SignInWithSocial';
 
 const SignIn = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-
-  const signInWithGG = async () =>
-    signInWithPopup(auth, googleProvider).then(async (res) => {
-      const { uid, displayName, email, photoURL } = res.user;
-
-      const existsUser = await getUserWithUID(uid);
-
-      if (!existsUser) {
-        const newUser = { uid, displayName, email, photoURL } as User;
-        const newUserDoc = await addDoc(usersCollectionRef, newUser);
-
-        dispatch(setUser({ ...newUser, documentID: newUserDoc.id }));
-      } else {
-        dispatch(setUser(existsUser));
-      }
-
-      navigate('/');
-    });
-
-  const signInWithFB = () =>
-    signInWithPopup(auth, facebookProvider).then((res) => {
-      const { uid, displayName, email, photoURL } = res.user;
-
-      // dispatch(
-      //   setUser({
-      //     uid,
-      //     displayName: displayName || '',
-      //     email: email || '',
-      //     photoURL: photoURL || '',
-      //   }),
-      // );
-
-      navigate('/');
-    });
   return (
     <div className='pt-[20px] px-[20px] md:px-[40px]'>
       <Link
@@ -89,20 +37,7 @@ const SignIn = () => {
           <div className='bg-slate-400 h-[1px] flex-1'></div>
         </div>
 
-        <div className='flex justify-center gap-[10px]'>
-          <button
-            onClick={signInWithFB}
-            type='button'
-            className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-            <BsFacebook color='#4267B2' />
-          </button>
-          <button
-            onClick={signInWithGG}
-            type='button'
-            className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-            <FcGoogle />
-          </button>
-        </div>
+        <SignInWithSocial />
 
         <div>
           Chưa có tài khoản ?
