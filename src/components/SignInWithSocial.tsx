@@ -1,6 +1,5 @@
 import { signInWithPopup } from 'firebase/auth';
 import { addDoc } from 'firebase/firestore';
-import React from 'react';
 import { BsFacebook } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';

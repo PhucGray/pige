@@ -6,7 +6,6 @@ export const NormalLayout = () => {
     <div className='h-screen flex flex-col'>
       <Navbar />
       <Outlet />
-      {/* <footer>Footer</footer> */}
     </div>
   );
 };

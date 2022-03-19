@@ -1,5 +1,3 @@
-// import PostFeeds from '../components/PostFeeds';
-
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Posts from '../components/MyPosts/Posts';

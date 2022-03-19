@@ -19,7 +19,6 @@
     @apply bg-darkPrimary;
   }
 
-  /* image */
   .content img {
     @apply mx-auto;
   }

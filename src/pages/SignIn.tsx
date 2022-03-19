@@ -1,8 +1,4 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { addDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FormEvent, MutableRefObject, useRef, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { SiReact } from 'react-icons/si';
@@ -10,13 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../app/hooks/reduxHooks';
 import SignInWithSocial from '../components/SignInWithSocial';
 import { showAlert } from '../features/alert/alertSlice';
-import { setUser, User } from '../features/user/userSlice';
-import {
-  auth,
-  checkEmail,
-  getUserWithUID,
-  usersCollectionRef,
-} from '../firebase';
+import { setUser } from '../features/user/userSlice';
+import { auth, getUserWithUID } from '../firebase';
 
 const SignIn = () => {
   const dispatch = useAppDispatch();

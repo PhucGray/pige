@@ -4,13 +4,12 @@ import { BiEdit, BiSearch } from 'react-icons/bi';
 import { BsBookmark } from 'react-icons/bs';
 import { CgFileDocument } from 'react-icons/cg';
 import { MdArrowBack, MdOutlineLogout } from 'react-icons/md';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { useWindowSize } from '../app/hooks/useWindowSize';
 import { setCurrentPost } from '../features/post/postSlice';
 import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
 import { auth } from '../firebase';
-import Loading from './Loading';
 
 const Navbar = () => {
   const navigate = useNavigate();
