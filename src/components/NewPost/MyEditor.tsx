@@ -150,7 +150,7 @@ const MyEditor = ({ action }: EditorProps) => {
       createdAt: new Date().toString(),
       readTime,
       title,
-      hearts: 0,
+      hearts: [],
     } as PostType;
 
     const newPostDoc = await addDoc(postsCollectionRef, newPost);

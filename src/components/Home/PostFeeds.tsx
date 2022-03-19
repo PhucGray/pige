@@ -111,7 +111,7 @@ const PostFeeds = () => {
                     <div className='font-semibold'>{readTime} phút đọc</div>
                     <div className='ml-[10px] flex items-center gap-[5px]'>
                       <BsSuitHeartFill />
-                      {hearts}
+                      {hearts.length}
                     </div>
                   </div>
 

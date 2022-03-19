@@ -5,7 +5,7 @@ export interface PostType {
   createdAt: string;
   readTime: string;
 
-  hearts: number;
+  hearts: string[];
 
   documentID?: string;
   displayName?: string;

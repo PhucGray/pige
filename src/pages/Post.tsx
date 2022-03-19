@@ -31,9 +31,9 @@ const Post = () => {
       const userRef = doc(db, 'users', user.documentID);
       const postRef = doc(db, 'posts', currentPost.documentID);
 
-      if (user.likes.includes(currentPost.documentID)) {
+      if (currentPost.hearts.includes(user.uid)) {
         await updateDoc(postRef, {
-          hearts: currentPost.hearts - 1,
+          hearts: arrayRemove(user.uid),
         });
 
         await updateDoc(userRef, {
@@ -46,12 +46,16 @@ const Post = () => {
             likes: [...user.likes].filter((i) => i !== currentPost.documentID),
           }),
         );
+
         dispatch(
-          setCurrentPost({ ...currentPost, hearts: currentPost.hearts - 1 }),
+          setCurrentPost({
+            ...currentPost,
+            hearts: currentPost.hearts.filter((i) => i !== user.uid),
+          }),
         );
       } else {
         await updateDoc(postRef, {
-          hearts: currentPost.hearts + 1,
+          hearts: arrayUnion(user.uid),
         });
 
         await updateDoc(userRef, {
@@ -65,7 +69,10 @@ const Post = () => {
           }),
         );
         dispatch(
-          setCurrentPost({ ...currentPost, hearts: currentPost.hearts + 1 }),
+          setCurrentPost({
+            ...currentPost,
+            hearts: [...currentPost.hearts, user.uid],
+          }),
         );
       }
     }
@@ -152,13 +159,13 @@ const Post = () => {
             <div
               onClick={handleLike}
               className={` ${
-                user?.likes.includes(currentPost.documentID || '???') &&
+                currentPost.hearts.includes(user?.uid || '???') &&
                 'bg-slate-300'
               }
                   flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
                 cursor-pointer`}>
               <BsHeart />
-              {currentPost.hearts}
+              {currentPost.hearts.length}
               <div>Yêu thích</div>
             </div>
 

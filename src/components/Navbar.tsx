@@ -100,7 +100,7 @@ const Navbar = () => {
 
                 <div className='relative group'>
                   <img
-                    src='https://firebasestorage.googleapis.com/v0/b/music-7bb30.appspot.com/o/Anh%20l%C3%A0m%20g%C3%AC%20sai.png?alt=media&token=fdd0c825-6b19-4fd1-bb6a-a06b6b9f1534'
+                    src={user.photoURL || '/default-avatar.jpg'}
                     alt='awf'
                     height={40}
                     width={40}
