@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { addDoc } from 'firebase/firestore';
-import { FormEvent, useState } from 'react';
+import { FormEvent, MutableRefObject, useRef, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { SiReact } from 'react-icons/si';
 import { Link, useNavigate } from 'react-router-dom';
@@ -26,6 +26,11 @@ const SignUp = () => {
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
+  const displayNameRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const emailRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const passwordRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const confirmRef = useRef() as MutableRefObject<HTMLInputElement>;
+
   function resetError() {
     setDisplayNameError('');
     setEmailError('');
@@ -38,26 +43,31 @@ const SignUp = () => {
 
     if (!displayName) {
       setDisplayNameError('Vui lòng nhập họ và tên');
+      displayNameRef.current.focus();
       isValid = false;
     }
 
     if (!email) {
       setEmailError('Vui lòng nhập email');
+      emailRef.current.focus();
       isValid = false;
     }
 
     if (!password) {
       setPasswordError('Vui lòng nhập mật khẩu');
+      passwordRef.current.focus();
       isValid = false;
     }
 
     if (!confirmPassword) {
       setConfirmError('Vui lòng nhập xác nhận mật khẩu');
+      confirmRef.current.focus();
       isValid = false;
     }
 
     if (password !== confirmPassword) {
       setConfirmError('Mật khẩu không trùng khớp');
+      confirmRef.current.focus();
       isValid = false;
     }
 
@@ -69,11 +79,13 @@ const SignUp = () => {
 
     if (displayName.trim().length < 3) {
       setDisplayNameError('Vui lòng nhập họ và tên từ 3 ký tự trở lên');
+      displayNameRef.current.focus();
       isValid = false;
     }
 
     if (password.trim().length < 6) {
       setPasswordError('Vui lòng nhập mật khẩu từ 6 ký tự trở lên');
+      passwordRef.current.focus();
       isValid = false;
     }
 
@@ -94,6 +106,7 @@ const SignUp = () => {
     if (await checkEmail(email)) {
       isValid = false;
       setEmailError('Email đã được đăng ký.');
+      emailRef.current.focus();
     }
 
     if (isValid) {
@@ -142,12 +155,16 @@ const SignUp = () => {
 
         <div className='flex flex-col space-y-[10px]'>
           <input
+            ref={displayNameRef}
             className={`form-control ${displayNameError && 'input-error'}`}
             type='text'
             placeholder='Họ và tên của bạn'
             autoFocus
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              setDisplayNameError('');
+            }}
           />
 
           {displayNameError && (
@@ -155,21 +172,29 @@ const SignUp = () => {
           )}
 
           <input
+            ref={emailRef}
             className={`form-control ${emailError && 'input-error'}`}
             type='text'
             placeholder='Email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailError('');
+            }}
           />
 
           {emailError && <div className='error-message'>{emailError}</div>}
 
           <input
+            ref={passwordRef}
             className={`form-control ${passwordError && 'input-error'}`}
             type='password'
             placeholder='Mật khẩu'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordError('');
+            }}
           />
 
           {passwordError && (
@@ -177,11 +202,15 @@ const SignUp = () => {
           )}
 
           <input
+            ref={confirmRef}
             className={`form-control ${confirmError && 'input-error'}`}
             type='password'
             placeholder='Xác nhận mật khẩu'
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              setConfirmError('');
+            }}
           />
 
           {confirmError && <div className='error-message'>{confirmError}</div>}
