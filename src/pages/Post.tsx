@@ -8,7 +8,6 @@ import { BsBookmarkPlus, BsChat, BsHeart } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Loading from '../components/Loading';
-import Sidebar from '../components/Post/Sidebar';
 import {
   fetchPostByID,
   selectCurrentPost,
@@ -26,7 +25,6 @@ const Post = () => {
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [comment, setComment] = useState('');
-  const [tableOfContents, setTableOfContents] = useState([] as string[]);
 
   async function handleLike() {
     if (user?.documentID && currentPost?.documentID) {
@@ -94,13 +92,6 @@ const Post = () => {
       const editorState = EditorState.createWithContent(contentState);
 
       setEditorState(editorState);
-
-      const h1List = contentBlock.contentBlocks.filter(
-        (i) => i.getType() === 'header-one',
-      );
-
-      const tableOfContents = h1List.map((i) => i.getText());
-      setTableOfContents(tableOfContents);
     }
   }, [currentPost]);
 
@@ -114,97 +105,91 @@ const Post = () => {
   return (
     <>
       {currentPost && (
-        <div className='mt-[30px] mx-auto px-[20px] w-full max-w-[1200px]'>
-          <div className='flex gap-[30px]'>
-            <div className='flex-1'>
-              <div className='flex items-center gap-[20px]'>
-                <img
-                  src={currentPost.photoURL || '/default-avatar.jpg'}
-                  alt='awf'
-                  height={40}
-                  width={40}
-                  className='rounded-full'
-                />
+        <div className='mt-[30px] mx-auto px-[20px] w-full max-w-[900px]'>
+          <div className='flex items-center gap-[20px]'>
+            <img
+              src={currentPost.photoURL || '/default-avatar.jpg'}
+              alt='awf'
+              height={40}
+              width={40}
+              className='rounded-full'
+            />
 
-                <div>
-                  <div className='font-semibold'>{currentPost.displayName}</div>
-                  <div className='flex items-center gap-[10px]'>
-                    <div>{moment(currentPost.createdAt).format('L')}</div>
-                    <div>-</div>
-                    <div>{currentPost.readTime} phút đọc</div>
-                  </div>
-                </div>
-
-                <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
-              </div>
-
-              <div className='mt-[20px] text-[40px] font-bold mb-[15px]'>
-                {currentPost.title}
-              </div>
-
-              {editorState && (
-                <Editor
-                  toolbarHidden
-                  readOnly
-                  toolbar={{
-                    image: {
-                      alignmentEnabled: false,
-                    },
-                  }}
-                  editorState={editorState}
-                  hashtag={{
-                    separator: ' ',
-                    trigger: '#',
-                  }}
-                />
-              )}
-
-              <div className='flex gap-2 mb-2'>
-                <div
-                  onClick={handleLike}
-                  className={` ${
-                    user?.likes.includes(currentPost.documentID || '???') &&
-                    'bg-slate-300'
-                  }
-                  flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
-                cursor-pointer`}>
-                  <BsHeart />
-                  {currentPost.hearts}
-                  <div>Yêu thích</div>
-                </div>
-
-                <div
-                  className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
-                cursor-pointer'>
-                  <BsChat />
-                  <div>Bình luận</div>
-                </div>
-              </div>
-
-              <div>
-                <input
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  type='text'
-                  className='form-control w-full'
-                  placeholder='Viết bình luận . . .'
-                />
-                {comment.trim() && (
-                  <div className='mt-3 text-center'>
-                    <button
-                      onClick={() => setComment('')}
-                      className='text-slate-600 font-bold w-[111px] py-[10px] '>
-                      Huỷ
-                    </button>
-                    <button className='bg-primary text-white font-bold px-[20px] py-[10px]'>
-                      Bình luận
-                    </button>
-                  </div>
-                )}
+            <div>
+              <div className='font-semibold'>{currentPost.displayName}</div>
+              <div className='flex items-center gap-[10px]'>
+                <div>{moment(currentPost.createdAt).format('L')}</div>
+                <div>-</div>
+                <div>{currentPost.readTime} phút đọc</div>
               </div>
             </div>
 
-            <Sidebar tableOfContents={tableOfContents} />
+            <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
+          </div>
+
+          <div className='mt-[20px] text-[40px] font-bold mb-[15px]'>
+            {currentPost.title}
+          </div>
+
+          {editorState && (
+            <Editor
+              toolbarHidden
+              readOnly
+              toolbar={{
+                image: {
+                  alignmentEnabled: false,
+                },
+              }}
+              editorState={editorState}
+              hashtag={{
+                separator: ' ',
+                trigger: '#',
+              }}
+            />
+          )}
+
+          <div className='flex gap-2 mb-2'>
+            <div
+              onClick={handleLike}
+              className={` ${
+                user?.likes.includes(currentPost.documentID || '???') &&
+                'bg-slate-300'
+              }
+                  flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
+                cursor-pointer`}>
+              <BsHeart />
+              {currentPost.hearts}
+              <div>Yêu thích</div>
+            </div>
+
+            <div
+              className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
+                cursor-pointer'>
+              <BsChat />
+              <div>Bình luận</div>
+            </div>
+          </div>
+
+          <div className='mb-[50px]'>
+            <input
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              type='text'
+              className='form-control w-full'
+              placeholder='Viết bình luận . . .'
+            />
+            {comment.trim() && (
+              <div className='mt-3 text-center'>
+                <button
+                  onClick={() => setComment('')}
+                  className='text-slate-600 font-bold w-[111px] py-[10px] '>
+                  Huỷ
+                </button>
+                <button className='bg-primary text-white font-bold px-[20px] py-[10px]'>
+                  Bình luận
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

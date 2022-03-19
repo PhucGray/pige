@@ -1,21 +1,40 @@
-import {
-  BsBookmarkPlus,
-  BsHeart,
-  BsHeartFill,
-  BsSuitHeartFill,
-} from 'react-icons/bs';
-import { useAppSelector } from '../../app/hooks/reduxHooks';
-import { selectPosts } from '../../features/post/postSlice';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import moment from 'moment';
-import { getUserWithUID } from '../../firebase';
-import { selectLoading } from '../../features/user/userSlice';
-import Loading from '../Loading';
+import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
+import { selectPosts } from '../../features/post/postSlice';
+import {
+  selectLoading,
+  selectUser,
+  setUser,
+} from '../../features/user/userSlice';
+import { db } from '../../firebase';
 
 const PostFeeds = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const posts = useAppSelector(selectPosts);
   const loading = useAppSelector(selectLoading);
+  const user = useAppSelector(selectUser);
+
+  async function handleBookmark(postID: string) {
+    if (user?.documentID) {
+      const userRef = doc(db, 'users', user.documentID);
+
+      await updateDoc(userRef, {
+        savedPosts: arrayUnion(postID),
+      });
+
+      dispatch(
+        setUser({
+          ...user,
+          savedPosts: [...user.savedPosts, postID],
+        }),
+      );
+    }
+  }
 
   if (loading)
     return (
@@ -97,9 +116,13 @@ const PostFeeds = () => {
                   </div>
 
                   <BsBookmarkPlus
-                    className='text-[22px] md:text-[25px] hover:scale-125'
+                    className={`text-[22px] md:text-[25px] hover:scale-125 ${
+                      user?.savedPosts.includes(documentID || '??') &&
+                      'text-primary'
+                    }`}
                     onClick={(e) => {
                       e.stopPropagation();
+                      handleBookmark(documentID || '????');
                     }}
                   />
                 </div>

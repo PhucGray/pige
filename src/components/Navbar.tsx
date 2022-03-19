@@ -85,7 +85,9 @@ const Navbar = () => {
           {user && (
             <>
               <div className='flex items-center gap-[10px]'>
-                <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
+                <button
+                  onClick={() => navigate('/bookmark')}
+                  className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
                   <BsBookmark size={25} />
                 </button>
                 <button

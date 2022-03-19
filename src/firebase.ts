@@ -13,7 +13,6 @@ import {
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { User } from './features/user/userSlice';
-import { PostType } from './types';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_API_KEY,

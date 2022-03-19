@@ -1,5 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { doc, getDoc, getDocs } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+} from 'firebase/firestore';
 import { RootState } from '../../app/store';
 import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
 import { PostType } from '../../types';
@@ -29,6 +36,33 @@ const getPosts = async () => {
     (p1, p2) =>
       new Date(p2.createdAt).getTime() - new Date(p1.createdAt).getTime(),
   );
+};
+
+const getPopularPosts = async () => {
+  const q = query(postsCollectionRef, orderBy('hearts', 'desc'), limit(3));
+
+  const posts = [] as PostType[];
+
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const docs = querySnapshot.docs;
+
+    for (let i = 0; i < docs.length; i++) {
+      const postData = docs[i].data() as PostType;
+
+      const userData = await getUserWithUID(postData.uid);
+
+      posts.push({
+        ...postData,
+        displayName: userData?.displayName,
+        documentID: docs[i].id,
+        photoURL: userData?.photoURL,
+      });
+    }
+  }
+
+  return posts;
 };
 
 const getPostsByUserID = async (user: User) => {
@@ -82,6 +116,14 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   return posts;
 });
 
+export const fetchPopularPosts = createAsyncThunk(
+  'posts/fetchPopularPosts',
+  async () => {
+    const posts = await getPopularPosts();
+    return posts;
+  },
+);
+
 export const fetchPostByID = createAsyncThunk(
   'posts/fetchPostByID',
   async (id: string) => {
@@ -102,12 +144,14 @@ interface PostsProps {
   posts: PostType[];
   currentPost: PostType | null;
   postsByUserID: PostType[];
+  polularPosts: PostType[];
 }
 
 const initialState: PostsProps = {
   posts: [],
   currentPost: null,
   postsByUserID: [],
+  polularPosts: [],
 };
 
 const postSlice = createSlice({
@@ -129,6 +173,10 @@ const postSlice = createSlice({
       state.posts = action.payload;
     });
 
+    builder.addCase(fetchPopularPosts.fulfilled, (state, action) => {
+      state.polularPosts = action.payload;
+    });
+
     builder.addCase(fetchPostByID.fulfilled, (state, action) => {
       state.currentPost = action.payload;
     });
@@ -144,5 +192,6 @@ export const selectPosts = (state: RootState) => state.post.posts;
 export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>
   state.post.postsByUserID;
+export const selectPopularPosts = (state: RootState) => state.post.polularPosts;
 
 export default postSlice.reducer;

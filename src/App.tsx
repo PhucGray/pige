@@ -8,6 +8,7 @@ import { selectAlert } from './features/alert/alertSlice';
 import { fetchPosts } from './features/post/postSlice';
 import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
+import Bookmark from './pages/Bookmark';
 import EditPost from './pages/EditPost';
 import Home from './pages/Home';
 import MyPost from './pages/MyPosts';
@@ -51,6 +52,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <MyPost />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='bookmark'
+            element={
+              <PrivateRoute>
+                <Bookmark />
               </PrivateRoute>
             }
           />

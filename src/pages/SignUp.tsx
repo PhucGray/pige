@@ -121,6 +121,7 @@ const SignUp = () => {
               email,
               posts: [],
               likes: [],
+              savedPosts: [],
             } as User;
 
             const { id } = await addDoc(usersCollectionRef, newUser);
