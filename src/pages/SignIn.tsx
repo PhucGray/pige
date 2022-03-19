@@ -15,8 +15,17 @@ const SignIn = () => {
         <div className='text-[27px]'>Đăng nhập</div>
 
         <div className='flex flex-col space-y-[15px]'>
-          <input type='text' placeholder='Email' autoFocus />
-          <input type='password' placeholder='Mật khẩu' />
+          <input
+            className='form-control'
+            type='text'
+            placeholder='Email'
+            autoFocus
+          />
+          <input
+            className='form-control'
+            type='password'
+            placeholder='Mật khẩu'
+          />
         </div>
 
         <Link

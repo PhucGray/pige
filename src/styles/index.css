@@ -3,12 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  input[type='text'],
-  input[type='password'],
-  input[type='number'] {
-    @apply border-none ring-1 ring-gray-200 focus:ring-primary;
-  }
-
   ::-webkit-scrollbar {
     width: 10px;
   }
@@ -28,5 +22,19 @@
   /* image */
   .content img {
     @apply mx-auto;
+  }
+}
+
+@layer components {
+  .form-control {
+    @apply border-none ring-1 ring-gray-200 focus:ring-primary;
+  }
+
+  .input-error {
+    @apply ring-2 ring-red-500 focus:ring-2 focus:ring-red-500;
+  }
+
+  .error-message {
+    @apply text-red-500 italic text-left;
   }
 }

@@ -53,3 +53,19 @@ export const getUserWithUID = async (uid: string) => {
 
   return userData;
 };
+
+export const checkEmail = async (email: string) => {
+  const q = query(usersCollectionRef, where('email', '==', email));
+
+  const userDocs = await getDocs(q);
+
+  const isEmpty = userDocs.empty;
+
+  if (isEmpty) return null;
+
+  const currentDoc = userDocs.docs[0];
+
+  const userData = { ...currentDoc.data(), documentID: currentDoc.id } as User;
+
+  return userData;
+};

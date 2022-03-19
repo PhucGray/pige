@@ -52,7 +52,7 @@ const Navbar = () => {
           <input
             type='text'
             placeholder='Nhập từ khoá'
-            className='flex-1'
+            className='flex-1 form-control'
             autoFocus={isSearching}
           />
         )}
