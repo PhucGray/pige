@@ -38,6 +38,7 @@ const SignInWithSocial = () => {
               posts: [],
               likes: [],
               savedPosts: [],
+              comments: [],
             } as User;
 
             const { id } = await addDoc(usersCollectionRef, newUser);

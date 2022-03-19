@@ -34,6 +34,7 @@ export const facebookProvider = new FacebookAuthProvider();
 
 export const usersCollectionRef = collection(db, 'users');
 export const postsCollectionRef = collection(db, 'posts');
+export const commentsCollectionRef = collection(db, 'comments');
 
 //
 

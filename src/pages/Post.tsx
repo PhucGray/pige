@@ -1,20 +1,29 @@
 import { ContentState, EditorState } from 'draft-js';
-import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  arrayRemove,
+  arrayUnion,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 import htmlToDraft from 'html-to-draftjs';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import { BsBookmarkPlus, BsChat, BsHeart } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Loading from '../components/Loading';
 import {
+  fetchCommentByPostID,
   fetchPostByID,
+  selectComments,
   selectCurrentPost,
   setCurrentPost,
 } from '../features/post/postSlice';
 import { selectUser, setUser } from '../features/user/userSlice';
-import { db } from '../firebase';
+import { commentsCollectionRef, db } from '../firebase';
+import { CommentType } from '../types';
 
 const Post = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +31,7 @@ const Post = () => {
 
   const currentPost = useAppSelector(selectCurrentPost);
   const user = useAppSelector(selectUser);
+  const comments = useAppSelector(selectComments);
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [comment, setComment] = useState('');
@@ -78,6 +88,34 @@ const Post = () => {
     }
   }
 
+  async function handleComment(e: FormEvent) {
+    e.preventDefault();
+
+    if (!comment.trim()) return setComment('');
+
+    if (user?.documentID && currentPost?.documentID) {
+      const newComment = {
+        postDocumentID: currentPost.documentID,
+        content: comment,
+        displayName: user.displayName,
+        photoURL: user.photoURL || null,
+      } as CommentType;
+
+      await addDoc(commentsCollectionRef, newComment);
+
+      dispatch(
+        setUser({
+          ...user,
+          comments: [...user.comments, currentPost.documentID],
+        }),
+      );
+
+      dispatch(fetchCommentByPostID(currentPost.documentID));
+
+      setComment('');
+    }
+  }
+
   useEffect(() => {
     dispatch(fetchPostByID(urlParams.id));
   }, [urlParams.id]);
@@ -99,6 +137,12 @@ const Post = () => {
       const editorState = EditorState.createWithContent(contentState);
 
       setEditorState(editorState);
+    }
+  }, [currentPost]);
+
+  useEffect(() => {
+    if (currentPost?.documentID) {
+      dispatch(fetchCommentByPostID(currentPost.documentID));
     }
   }, [currentPost]);
 
@@ -133,11 +177,9 @@ const Post = () => {
 
             <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
           </div>
-
           <div className='mt-[20px] text-[40px] font-bold mb-[15px]'>
             {currentPost.title}
           </div>
-
           {editorState && (
             <Editor
               toolbarHidden
@@ -154,7 +196,6 @@ const Post = () => {
               }}
             />
           )}
-
           <div className='flex gap-2 mb-2'>
             <div
               onClick={handleLike}
@@ -176,8 +217,7 @@ const Post = () => {
               <div>Bình luận</div>
             </div>
           </div>
-
-          <div className='mb-[50px]'>
+          <form onSubmit={handleComment} className='mb-[20px]'>
             <input
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -185,18 +225,40 @@ const Post = () => {
               className='form-control w-full'
               placeholder='Viết bình luận . . .'
             />
+
             {comment.trim() && (
               <div className='mt-3 text-center'>
                 <button
+                  type='button'
                   onClick={() => setComment('')}
                   className='text-slate-600 font-bold w-[111px] py-[10px] '>
                   Huỷ
                 </button>
-                <button className='bg-primary text-white font-bold px-[20px] py-[10px]'>
+                <button
+                  type='submit'
+                  className='bg-primary text-white font-bold px-[20px] py-[10px]'>
                   Bình luận
                 </button>
               </div>
             )}
+          </form>
+
+          <div className='mb-[50px]'>
+            {comments &&
+              comments.map((comment, index) => (
+                <div
+                  key={comment.postDocumentID + index}
+                  className='flex gap-[20px]'>
+                  <img
+                    className='rounded-full h-[35px] w-[35px]'
+                    src={comment.photoURL || '/default-avatar.jpg'}
+                  />
+                  <div>
+                    <div className='font-bold'>{comment.displayName}</div>
+                    <div>{comment.content}</div>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       )}

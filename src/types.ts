@@ -1,3 +1,5 @@
+import { User } from './features/user/userSlice';
+
 export interface PostType {
   uid: string;
   title: string;
@@ -9,6 +11,13 @@ export interface PostType {
 
   documentID?: string;
   displayName?: string;
+  photoURL?: string;
+}
+
+export interface CommentType {
+  postDocumentID: string;
+  content: string;
+  displayName: string;
   photoURL?: string;
 }
 

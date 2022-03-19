@@ -11,6 +11,7 @@ export interface User {
   posts: string[];
   savedPosts: string[];
   likes: string[];
+  comments: string[];
 }
 
 interface UserProps {

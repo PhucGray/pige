@@ -6,10 +6,16 @@ import {
   limit,
   orderBy,
   query,
+  where,
 } from 'firebase/firestore';
 import { RootState } from '../../app/store';
-import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
-import { PostType } from '../../types';
+import {
+  commentsCollectionRef,
+  db,
+  getUserWithUID,
+  postsCollectionRef,
+} from '../../firebase';
+import { CommentType, PostType } from '../../types';
 import { User } from '../user/userSlice';
 
 const getPosts = async () => {
@@ -111,6 +117,20 @@ const getPostByID = async (id: string) => {
   return null;
 };
 
+const getCommentByPostID = async (postID: string) => {
+  const q = query(commentsCollectionRef, where('postDocumentID', '==', postID));
+
+  const querySnapshot = await getDocs(q);
+
+  const isEmpty = querySnapshot.empty;
+
+  if (isEmpty) return null;
+
+  return querySnapshot.docs.map((doc) => {
+    return { ...doc.data() } as CommentType;
+  });
+};
+
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   const posts = await getPosts();
   return posts;
@@ -140,11 +160,20 @@ export const fetchPostsByUserID = createAsyncThunk(
   },
 );
 
+export const fetchCommentByPostID = createAsyncThunk(
+  'posts/fetchCommentByPostID',
+  async (postID: string) => {
+    const comments = await getCommentByPostID(postID);
+    return comments || [];
+  },
+);
+
 interface PostsProps {
   posts: PostType[];
   currentPost: PostType | null;
   postsByUserID: PostType[];
   polularPosts: PostType[];
+  comments: CommentType[];
 }
 
 const initialState: PostsProps = {
@@ -152,6 +181,7 @@ const initialState: PostsProps = {
   currentPost: null,
   postsByUserID: [],
   polularPosts: [],
+  comments: [],
 };
 
 const postSlice = createSlice({
@@ -184,6 +214,10 @@ const postSlice = createSlice({
     builder.addCase(fetchPostsByUserID.fulfilled, (state, action) => {
       state.postsByUserID = action.payload;
     });
+
+    builder.addCase(fetchCommentByPostID.fulfilled, (state, action) => {
+      state.comments = action.payload;
+    });
   },
 });
 
@@ -193,5 +227,6 @@ export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>
   state.post.postsByUserID;
 export const selectPopularPosts = (state: RootState) => state.post.polularPosts;
+export const selectComments = (state: RootState) => state.post.comments;
 
 export default postSlice.reducer;
