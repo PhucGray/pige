@@ -29,6 +29,7 @@ interface EditorProps {
 
 const toolbar = {
   options: [
+    'blockType',
     'inline',
     'fontSize',
     'list',
@@ -36,7 +37,6 @@ const toolbar = {
     'emoji',
     'image',
     'history',
-    'blockType',
   ],
   inline: {
     inDropdown: false,
@@ -98,9 +98,6 @@ const toolbar = {
     inDropdown: true,
     options: ['Normal', 'H1', 'H2', 'Blockquote', 'Code'],
     className: 'blockType',
-    // className: undefined,
-    // component: undefined,
-    // dropdownClassName: undefined,
   },
 };
 
@@ -153,6 +150,7 @@ const MyEditor = ({ action }: EditorProps) => {
       createdAt: new Date().toString(),
       readTime,
       title,
+      hearts: 0,
     } as PostType;
 
     const newPostDoc = await addDoc(postsCollectionRef, newPost);
@@ -262,12 +260,15 @@ const MyEditor = ({ action }: EditorProps) => {
           <div className='flex justify-center space-x-3 mt-[10px]'>
             <button
               onClick={() => setPreview(false)}
-              className='w-[120px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary'>
-              Tiếp tục sửa
+              className='px-[30px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary'>
+              Tiếp tục {action === 'add' ? 'viết' : 'sửa'}
             </button>
             <button
-              onClick={action === 'add' ? handlePost : handleEdit}
-              className='w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
+              onClick={() => {
+                action === 'add' ? handlePost() : handleEdit();
+                setPreview(false);
+              }}
+              className='px-[40px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
               {action === 'add' ? 'Đăng bài' : 'Sửa bài'}
             </button>
           </div>
@@ -322,7 +323,7 @@ const MyEditor = ({ action }: EditorProps) => {
               e.preventDefault();
           }}
           placeholder='Thời gian đọc (phút)'
-          className='focus:ring-1 focus:ring-primary flex-1 max-w-[185px]'
+          className='form-control flex-1 max-w-[185px]'
           value={readTime}
           onChange={(e) => setReadTime(e.target.value)}
           required
@@ -331,7 +332,7 @@ const MyEditor = ({ action }: EditorProps) => {
         <input
           type='text'
           placeholder='Tiêu đề của bài viêt'
-          className='focus:ring-1 focus:ring-primary flex-1 max-w-[500px]'
+          className='form-control flex-1 max-w-[500px]'
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required

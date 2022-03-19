@@ -35,7 +35,7 @@ module.exports = {
     require('@tailwindcss/forms'),
     plugin(function ({ addBase, theme }) {
       addBase({
-        h1: { fontWeight: 'bold', fontSize: '22px' },
+        h1: { fontWeight: 'bold', fontSize: '30px' },
         h2: { fontWeight: 'bold', fontSize: '18px' },
       });
     }),

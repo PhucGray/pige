@@ -1,4 +1,5 @@
 import { ContentState, EditorState } from 'draft-js';
+import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import htmlToDraft from 'html-to-draftjs';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -13,15 +14,64 @@ import {
   selectCurrentPost,
   setCurrentPost,
 } from '../features/post/postSlice';
+import { selectUser, setUser } from '../features/user/userSlice';
+import { db } from '../firebase';
 
 const Post = () => {
   const dispatch = useAppDispatch();
   const urlParams = useParams() as { id: string };
 
   const currentPost = useAppSelector(selectCurrentPost);
+  const user = useAppSelector(selectUser);
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [comment, setComment] = useState('');
+  const [tableOfContents, setTableOfContents] = useState([] as string[]);
+
+  async function handleLike() {
+    if (user?.documentID && currentPost?.documentID) {
+      const userRef = doc(db, 'users', user.documentID);
+      const postRef = doc(db, 'posts', currentPost.documentID);
+
+      if (user.likes.includes(currentPost.documentID)) {
+        await updateDoc(postRef, {
+          hearts: currentPost.hearts - 1,
+        });
+
+        await updateDoc(userRef, {
+          likes: arrayRemove(currentPost.documentID),
+        });
+
+        dispatch(
+          setUser({
+            ...user,
+            likes: [...user.likes].filter((i) => i !== currentPost.documentID),
+          }),
+        );
+        dispatch(
+          setCurrentPost({ ...currentPost, hearts: currentPost.hearts - 1 }),
+        );
+      } else {
+        await updateDoc(postRef, {
+          hearts: currentPost.hearts + 1,
+        });
+
+        await updateDoc(userRef, {
+          likes: arrayUnion(currentPost.documentID),
+        });
+
+        dispatch(
+          setUser({
+            ...user,
+            likes: [...user.likes, currentPost.documentID],
+          }),
+        );
+        dispatch(
+          setCurrentPost({ ...currentPost, hearts: currentPost.hearts + 1 }),
+        );
+      }
+    }
+  }
 
   useEffect(() => {
     dispatch(fetchPostByID(urlParams.id));
@@ -40,8 +90,17 @@ const Post = () => {
       const contentState = ContentState.createFromBlockArray(
         contentBlock.contentBlocks,
       );
+
       const editorState = EditorState.createWithContent(contentState);
+
       setEditorState(editorState);
+
+      const h1List = contentBlock.contentBlocks.filter(
+        (i) => i.getType() === 'header-one',
+      );
+
+      const tableOfContents = h1List.map((i) => i.getText());
+      setTableOfContents(tableOfContents);
     }
   }, [currentPost]);
 
@@ -60,7 +119,7 @@ const Post = () => {
             <div className='flex-1'>
               <div className='flex items-center gap-[20px]'>
                 <img
-                  src={currentPost.photoURL}
+                  src={currentPost.photoURL || '/default-avatar.jpg'}
                   alt='awf'
                   height={40}
                   width={40}
@@ -79,7 +138,7 @@ const Post = () => {
                 <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
               </div>
 
-              <div className='mt-[20px] text-[35px] font-semibold mb-[15px]'>
+              <div className='mt-[20px] text-[40px] font-bold mb-[15px]'>
                 {currentPost.title}
               </div>
 
@@ -100,13 +159,23 @@ const Post = () => {
                 />
               )}
 
-              <div className='flex gap-2'>
-                <div className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]'>
+              <div className='flex gap-2 mb-2'>
+                <div
+                  onClick={handleLike}
+                  className={` ${
+                    user?.likes.includes(currentPost.documentID || '???') &&
+                    'bg-slate-300'
+                  }
+                  flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
+                cursor-pointer`}>
                   <BsHeart />
+                  {currentPost.hearts}
                   <div>Yêu thích</div>
                 </div>
 
-                <div className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]'>
+                <div
+                  className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
+                cursor-pointer'>
                   <BsChat />
                   <div>Bình luận</div>
                 </div>
@@ -117,7 +186,7 @@ const Post = () => {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   type='text'
-                  className='w-full'
+                  className='form-control w-full'
                   placeholder='Viết bình luận . . .'
                 />
                 {comment.trim() && (
@@ -135,7 +204,7 @@ const Post = () => {
               </div>
             </div>
 
-            <Sidebar />
+            <Sidebar tableOfContents={tableOfContents} />
           </div>
         </div>
       )}

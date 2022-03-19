@@ -9,6 +9,7 @@ export interface User {
   displayName: string;
   photoURL?: string;
   posts: string[];
+  likes: string[];
 }
 
 interface UserProps {

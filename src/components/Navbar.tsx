@@ -7,6 +7,7 @@ import { MdArrowBack, MdOutlineLogout } from 'react-icons/md';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { useWindowSize } from '../app/hooks/useWindowSize';
+import { setCurrentPost } from '../features/post/postSlice';
 import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
 import { auth } from '../firebase';
 import Loading from './Loading';
@@ -88,7 +89,10 @@ const Navbar = () => {
                   <BsBookmark size={25} />
                 </button>
                 <button
-                  onClick={() => navigate('/new-post')}
+                  onClick={() => {
+                    dispatch(setCurrentPost(null));
+                    navigate('/new-post');
+                  }}
                   className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
                   <BiEdit size={30} />
                 </button>

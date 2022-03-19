@@ -1,4 +1,9 @@
-import { BsBookmarkPlus } from 'react-icons/bs';
+import {
+  BsBookmarkPlus,
+  BsHeart,
+  BsHeartFill,
+  BsSuitHeartFill,
+} from 'react-icons/bs';
 import { useAppSelector } from '../../app/hooks/reduxHooks';
 import { selectPosts } from '../../features/post/postSlice';
 import moment from 'moment';
@@ -55,6 +60,7 @@ const PostFeeds = () => {
             documentID,
             displayName,
             photoURL,
+            hearts,
           }) => {
             return (
               <div
@@ -64,7 +70,7 @@ const PostFeeds = () => {
                 <div className='flex flex-wrap items-center justify-between'>
                   <div className='flex items-center gap-[10px]'>
                     <img
-                      src={photoURL}
+                      src={photoURL || '/default-avatar.jpg'}
                       alt='awf'
                       height={40}
                       width={40}
@@ -82,7 +88,13 @@ const PostFeeds = () => {
                 <div className='text-[20px] font-semibold'>{title}</div>
 
                 <div className='flex justify-between flex-wrap'>
-                  <div className='font-semibold'>{readTime} phút đọc</div>
+                  <div className='flex flex-wrap'>
+                    <div className='font-semibold'>{readTime} phút đọc</div>
+                    <div className='ml-[10px] flex items-center gap-[5px]'>
+                      <BsSuitHeartFill />
+                      {hearts}
+                    </div>
+                  </div>
 
                   <BsBookmarkPlus
                     className='text-[22px] md:text-[25px] hover:scale-125'

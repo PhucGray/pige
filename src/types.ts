@@ -5,12 +5,14 @@ export interface PostType {
   createdAt: string;
   readTime: string;
 
+  hearts: number;
+
   documentID?: string;
   displayName?: string;
   photoURL?: string;
 }
 
 export interface Alert {
-  type: 'success' | 'error'
+  type: 'success' | 'error';
   message: string;
 }

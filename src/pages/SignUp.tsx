@@ -120,6 +120,7 @@ const SignUp = () => {
               displayName,
               email,
               posts: [],
+              likes: [],
             } as User;
 
             const { id } = await addDoc(usersCollectionRef, newUser);
