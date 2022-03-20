@@ -8,6 +8,7 @@ export interface PostType {
   readTime: string;
 
   hearts: string[];
+  comments: CommentType[];
 
   documentID?: string;
   displayName?: string;
@@ -15,10 +16,12 @@ export interface PostType {
 }
 
 export interface CommentType {
-  postDocumentID: string;
+  commentID: string;
+  userID: string;
   content: string;
   displayName: string;
   photoURL?: string;
+  createdAt: string;
 }
 
 export interface Alert {

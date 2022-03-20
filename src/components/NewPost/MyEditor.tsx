@@ -151,6 +151,7 @@ const MyEditor = ({ action }: EditorProps) => {
       readTime,
       title,
       hearts: [],
+      comments: [],
     } as PostType;
 
     const newPostDoc = await addDoc(postsCollectionRef, newPost);

@@ -117,20 +117,6 @@ const getPostByID = async (id: string) => {
   return null;
 };
 
-const getCommentByPostID = async (postID: string) => {
-  const q = query(commentsCollectionRef, where('postDocumentID', '==', postID));
-
-  const querySnapshot = await getDocs(q);
-
-  const isEmpty = querySnapshot.empty;
-
-  if (isEmpty) return null;
-
-  return querySnapshot.docs.map((doc) => {
-    return { ...doc.data() } as CommentType;
-  });
-};
-
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   const posts = await getPosts();
   return posts;
@@ -157,14 +143,6 @@ export const fetchPostsByUserID = createAsyncThunk(
   async (user: User) => {
     const posts = await getPostsByUserID(user);
     return posts;
-  },
-);
-
-export const fetchCommentByPostID = createAsyncThunk(
-  'posts/fetchCommentByPostID',
-  async (postID: string) => {
-    const comments = await getCommentByPostID(postID);
-    return comments || [];
   },
 );
 
@@ -214,10 +192,6 @@ const postSlice = createSlice({
     builder.addCase(fetchPostsByUserID.fulfilled, (state, action) => {
       state.postsByUserID = action.payload;
     });
-
-    builder.addCase(fetchCommentByPostID.fulfilled, (state, action) => {
-      state.comments = action.payload;
-    });
   },
 });
 
@@ -227,6 +201,5 @@ export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>
   state.post.postsByUserID;
 export const selectPopularPosts = (state: RootState) => state.post.polularPosts;
-export const selectComments = (state: RootState) => state.post.comments;
 
 export default postSlice.reducer;

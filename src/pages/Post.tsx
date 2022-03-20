@@ -1,11 +1,5 @@
 import { ContentState, EditorState } from 'draft-js';
-import {
-  addDoc,
-  arrayRemove,
-  arrayUnion,
-  doc,
-  updateDoc,
-} from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import htmlToDraft from 'html-to-draftjs';
 import moment from 'moment';
 import { FormEvent, useEffect, useState } from 'react';
@@ -15,15 +9,15 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Loading from '../components/Loading';
 import {
-  fetchCommentByPostID,
   fetchPostByID,
-  selectComments,
   selectCurrentPost,
   setCurrentPost,
 } from '../features/post/postSlice';
 import { selectUser, setUser } from '../features/user/userSlice';
-import { commentsCollectionRef, db } from '../firebase';
+import { db } from '../firebase';
 import { CommentType } from '../types';
+import { FiMoreVertical } from 'react-icons/fi';
+import { AiOutlineClose } from 'react-icons/ai';
 
 const Post = () => {
   const dispatch = useAppDispatch();
@@ -31,10 +25,10 @@ const Post = () => {
 
   const currentPost = useAppSelector(selectCurrentPost);
   const user = useAppSelector(selectUser);
-  const comments = useAppSelector(selectComments);
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [comment, setComment] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
 
   async function handleLike() {
     if (user?.documentID && currentPost?.documentID) {
@@ -91,28 +85,70 @@ const Post = () => {
   async function handleComment(e: FormEvent) {
     e.preventDefault();
 
+    setCommentLoading(true);
+
     if (!comment.trim()) return setComment('');
 
     if (user?.documentID && currentPost?.documentID) {
+      const userRef = doc(db, 'users', user.documentID);
+      const postRef = doc(db, 'posts', currentPost.documentID);
+
+      const commentID = user.uid + new Date().toISOString();
+
       const newComment = {
-        postDocumentID: currentPost.documentID,
+        commentID,
+        userID: user.uid,
         content: comment,
         displayName: user.displayName,
         photoURL: user.photoURL || null,
+        createdAt: new Date().toString(),
       } as CommentType;
 
-      await addDoc(commentsCollectionRef, newComment);
+      await updateDoc(postRef, {
+        comments: arrayUnion(newComment),
+      });
+
+      await updateDoc(userRef, {
+        comments: arrayUnion(commentID),
+      });
 
       dispatch(
         setUser({
           ...user,
-          comments: [...user.comments, currentPost.documentID],
+          comments: [...user.comments, commentID],
         }),
       );
 
-      dispatch(fetchCommentByPostID(currentPost.documentID));
+      dispatch(fetchPostByID(currentPost.documentID));
 
       setComment('');
+      setCommentLoading(false);
+    } else {
+      setCommentLoading(false);
+    }
+  }
+
+  async function handleDeleteComment(commentID: string) {
+    if (user?.documentID && currentPost?.documentID) {
+      const userRef = doc(db, 'users', user.documentID);
+      const postRef = doc(db, 'posts', currentPost.documentID);
+
+      await updateDoc(postRef, {
+        comments: currentPost.comments.filter((c) => c.commentID !== commentID),
+      });
+
+      await updateDoc(userRef, {
+        comments: arrayRemove(commentID),
+      });
+
+      dispatch(
+        setUser({
+          ...user,
+          comments: user.comments.filter((c) => c !== commentID),
+        }),
+      );
+
+      dispatch(fetchPostByID(currentPost.documentID));
     }
   }
 
@@ -137,12 +173,6 @@ const Post = () => {
       const editorState = EditorState.createWithContent(contentState);
 
       setEditorState(editorState);
-    }
-  }, [currentPost]);
-
-  useEffect(() => {
-    if (currentPost?.documentID) {
-      dispatch(fetchCommentByPostID(currentPost.documentID));
     }
   }, [currentPost]);
 
@@ -241,24 +271,46 @@ const Post = () => {
                 </button>
               </div>
             )}
+
+            {commentLoading && (
+              <div className='my-[15px]'>
+                <Loading />
+              </div>
+            )}
           </form>
 
           <div className='mb-[50px]'>
-            {comments &&
-              comments.map((comment, index) => (
-                <div
-                  key={comment.postDocumentID + index}
-                  className='flex gap-[20px]'>
-                  <img
-                    className='rounded-full h-[35px] w-[35px]'
-                    src={comment.photoURL || '/default-avatar.jpg'}
-                  />
-                  <div>
-                    <div className='font-bold'>{comment.displayName}</div>
-                    <div>{comment.content}</div>
+            {currentPost.comments &&
+              currentPost.comments
+                .slice()
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+                )
+                .map((comment, index) => (
+                  <div
+                    key={comment.userID + index}
+                    className='flex gap-[20px] group'>
+                    <img
+                      className='rounded-full h-[35px] w-[35px]'
+                      src={comment.photoURL || '/default-avatar.jpg'}
+                    />
+
+                    <div>
+                      <div className='font-bold'>{comment.displayName}</div>
+                      <div>{comment.content}</div>
+                    </div>
+
+                    {user?.comments.includes(comment.commentID) && (
+                      <div
+                        onClick={() => handleDeleteComment(comment.commentID)}
+                        className='text-[25px] cursor-pointer hidden group-hover:block'>
+                        <AiOutlineClose />
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                ))}
           </div>
         </div>
       )}
