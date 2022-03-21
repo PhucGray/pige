@@ -6,15 +6,9 @@ import {
   limit,
   orderBy,
   query,
-  where,
 } from 'firebase/firestore';
 import { RootState } from '../../app/store';
-import {
-  commentsCollectionRef,
-  db,
-  getUserWithUID,
-  postsCollectionRef,
-} from '../../firebase';
+import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
 import { CommentType, PostType } from '../../types';
 import { User } from '../user/userSlice';
 
@@ -192,6 +186,7 @@ interface PostsProps {
   polularPosts: PostType[];
   comments: CommentType[];
   savedPosts: PostType[];
+  postLoading: boolean;
 }
 
 const initialState: PostsProps = {
@@ -201,6 +196,7 @@ const initialState: PostsProps = {
   polularPosts: [],
   comments: [],
   savedPosts: [],
+  postLoading: false,
 };
 
 const postSlice = createSlice({
@@ -216,6 +212,9 @@ const postSlice = createSlice({
     setPostsByUserID: (state, { payload }: PayloadAction<PostType[]>) => {
       state.postsByUserID = payload;
     },
+    setPostLoading: (state, { payload }: PayloadAction<boolean>) => {
+      state.postLoading = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
@@ -224,6 +223,7 @@ const postSlice = createSlice({
 
     builder.addCase(fetchSavedPosts.fulfilled, (state, action) => {
       state.savedPosts = action.payload;
+      state.postLoading = false;
     });
 
     builder.addCase(fetchPopularPosts.fulfilled, (state, action) => {
@@ -236,16 +236,19 @@ const postSlice = createSlice({
 
     builder.addCase(fetchPostsByUserID.fulfilled, (state, action) => {
       state.postsByUserID = action.payload;
+      state.postLoading = false;
     });
   },
 });
 
-export const { setPosts, setCurrentPost, setPostsByUserID } = postSlice.actions;
+export const { setPosts, setCurrentPost, setPostsByUserID, setPostLoading } =
+  postSlice.actions;
 export const selectPosts = (state: RootState) => state.post.posts;
 export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>
   state.post.postsByUserID;
 export const selectPopularPosts = (state: RootState) => state.post.polularPosts;
 export const selectSavedPosts = (state: RootState) => state.post.savedPosts;
+export const selectPostLoading = (state: RootState) => state.post.postLoading;
 
 export default postSlice.reducer;

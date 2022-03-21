@@ -4,10 +4,12 @@ import htmlToDraft from 'html-to-draftjs';
 import moment from 'moment';
 import { FormEvent, useEffect, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
+import { AiOutlineClose } from 'react-icons/ai';
 import { BsBookmarkPlus, BsChat, BsHeart } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Loading from '../components/Loading';
+import PenLoading from '../components/PenLoading';
 import {
   fetchPostByID,
   fetchSavedPosts,
@@ -17,8 +19,6 @@ import {
 import { selectUser, setUser } from '../features/user/userSlice';
 import { db } from '../firebase';
 import { CommentType } from '../types';
-import { FiMoreVertical } from 'react-icons/fi';
-import { AiOutlineClose } from 'react-icons/ai';
 
 const Post = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +30,7 @@ const Post = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [comment, setComment] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
+  const [showComment, setShowComment] = useState(false);
 
   async function handleLike() {
     if (user?.documentID && currentPost?.documentID) {
@@ -209,12 +210,7 @@ const Post = () => {
     }
   }, [currentPost]);
 
-  if (!currentPost)
-    return (
-      <div className='mt-[40px]'>
-        <Loading />
-      </div>
-    );
+  if (!currentPost) return <PenLoading />;
 
   return (
     <>
@@ -239,6 +235,12 @@ const Post = () => {
             </div>
 
             <BsBookmarkPlus
+              title={
+                currentPost.documentID &&
+                user?.savedPosts.includes(currentPost.documentID)
+                  ? 'Huỷ lưu bài viêt'
+                  : 'Lưu bài viết'
+              }
               onClick={() =>
                 currentPost.documentID && handleBookmark(currentPost.documentID)
               }
@@ -284,45 +286,50 @@ const Post = () => {
             </div>
 
             <div
+              onClick={() => setShowComment(!showComment)}
               className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
                 cursor-pointer'>
               <BsChat />
               <div>Bình luận</div>
             </div>
           </div>
-          <form onSubmit={handleComment} className='mb-[20px]'>
-            <input
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              type='text'
-              className='form-control w-full'
-              placeholder='Viết bình luận . . .'
-            />
 
-            {comment.trim() && (
-              <div className='mt-3 text-center'>
-                <button
-                  type='button'
-                  onClick={() => setComment('')}
-                  className='text-slate-600 font-bold w-[111px] py-[10px] '>
-                  Huỷ
-                </button>
-                <button
-                  type='submit'
-                  className='bg-primary text-white font-bold px-[20px] py-[10px]'>
-                  Bình luận
-                </button>
-              </div>
-            )}
+          {showComment && (
+            <form onSubmit={handleComment} className='mb-[20px]'>
+              <input
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                type='text'
+                className='form-control w-full'
+                placeholder='Viết bình luận . . .'
+                autoFocus
+              />
 
-            {commentLoading && (
-              <div className='my-[15px]'>
-                <Loading />
-              </div>
-            )}
-          </form>
+              {comment.trim() && (
+                <div className='mt-3 text-center'>
+                  <button
+                    type='button'
+                    onClick={() => setComment('')}
+                    className='text-slate-600 font-bold w-[111px] py-[10px] '>
+                    Huỷ
+                  </button>
+                  <button
+                    type='submit'
+                    className='bg-primary text-white font-bold px-[20px] py-[10px]'>
+                    Bình luận
+                  </button>
+                </div>
+              )}
 
-          <div className='mb-[50px]'>
+              {commentLoading && (
+                <div className='my-[15px]'>
+                  <Loading />
+                </div>
+              )}
+            </form>
+          )}
+
+          <div className='mb-[50px] mt-[20px]'>
             {currentPost.comments &&
               currentPost.comments
                 .slice()

@@ -2,19 +2,12 @@ import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import moment from 'moment';
 import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-// import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
-// import { fetchSavedPosts, selectPosts } from '../../features/post/postSlice';
-// import {
-//   selectLoading,
-//   selectUser,
-//   setUser,
-// } from '../../features/user/userSlice';
-// import { db } from '../../firebase';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { fetchSavedPosts } from '../features/post/postSlice';
 import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
 import { db } from '../firebase';
 import { PostType } from '../types';
+import PenLoading from './PenLoading';
 
 interface PostsListProps {
   posts: PostType[];
@@ -59,34 +52,7 @@ const PostsList = ({ posts }: PostsListProps) => {
     }
   }
 
-  if (loading)
-    return (
-      <div className='flex-1 overflow-auto'>
-        {[...Array(3).keys()].map((number) => (
-          <div
-            key={number}
-            className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] space-y-1'>
-            <div className='flex flex-wrap items-center justify-between'>
-              <div className='flex items-center gap-[10px]'>
-                <div className='animate-pulse bg-gray-400 h-[40px] w-[40px] rounded-full'></div>
-
-                <div className='animate-pulse bg-gray-400 h-[24px] w-[250px]'></div>
-              </div>
-
-              <div className='animate-pulse bg-gray-400 h-[24px] w-[100px]'></div>
-            </div>
-
-            <div className='animate-pulse bg-gray-400 h-[30px] w-full'></div>
-
-            <div className='flex justify-between flex-wrap'>
-              <div className='animate-pulse bg-gray-400 h-[25px] w-[80px]'></div>
-
-              <div className='animate-pulse bg-gray-400 h-[25px] w-[25px]'></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+  if (loading) return <PenLoading />;
 
   if (posts.length === 0)
     return <div className='text-center flex-1'>Chưa có bài viết nào</div>;
@@ -139,6 +105,11 @@ const PostsList = ({ posts }: PostsListProps) => {
                   </div>
 
                   <BsBookmarkPlus
+                    title={
+                      documentID && user?.savedPosts.includes(documentID)
+                        ? 'Huỷ lưu bài viêt'
+                        : 'Lưu bài viết'
+                    }
                     className={`text-[22px] md:text-[25px] hover:scale-125 ${
                       documentID &&
                       user?.savedPosts.includes(documentID) &&

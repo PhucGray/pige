@@ -13,6 +13,7 @@ module.exports = {
       animation: {
         'count-down': 'count-down 4s linear forwards',
         disappear: 'disappear 1s 4s ease-out forwards',
+        write: 'write 1.5s infinite linear alternate-reverse',
       },
       keyframes: {
         'count-down': {
@@ -26,6 +27,17 @@ module.exports = {
           '100%': {
             transform: 'translateX(9999999999999px)',
             opacity: 0,
+          },
+        },
+        write: {
+          '0%': {
+            transform: 'rotate(0deg)',
+          },
+          '50%': {
+            transform: 'rotate(-45deg)',
+          },
+          '100%': {
+            transform: 'rotate(-90deg)',
           },
         },
       },

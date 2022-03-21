@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Posts from '../components/MyPosts/Posts';
-import { fetchPostsByUserID } from '../features/post/postSlice';
+import { fetchPostsByUserID, setPostLoading } from '../features/post/postSlice';
 import { selectUser } from '../features/user/userSlice';
 
 const MyPosts = () => {
@@ -9,6 +9,7 @@ const MyPosts = () => {
   const user = useAppSelector(selectUser);
   useEffect(() => {
     if (user?.uid) {
+      dispatch(setPostLoading(true));
       dispatch(fetchPostsByUserID(user));
     }
   }, [user]);

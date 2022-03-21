@@ -51,7 +51,7 @@ const Navbar = () => {
       )}
       <form
         onSubmit={handleSubmit}
-        className={`flex flex-1 h-[45px] max-w-[500px] mr-[10px]
+        className={`flex flex-1 h-[45px] md:max-w-[500px] mr-[10px]
             ${
               isSearching || isLaptopUp
                 ? 'border-[1px] justify-between'
@@ -97,11 +97,13 @@ const Navbar = () => {
             <>
               <div className='flex items-center gap-[10px]'>
                 <button
+                  title='Bài viết đã lưu'
                   onClick={() => navigate('/bookmark')}
                   className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
                   <BsBookmark size={25} />
                 </button>
                 <button
+                  title='Viết bài'
                   onClick={() => {
                     dispatch(setCurrentPost(null));
                     navigate('/new-post');

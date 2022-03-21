@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { showAlert } from '../../features/alert/alertSlice';
 import {
+  selectPostLoading,
   selectPosts,
   selectPostsByUserID,
   setPosts,
@@ -12,6 +13,7 @@ import {
 } from '../../features/post/postSlice';
 import { selectLoading, selectUser } from '../../features/user/userSlice';
 import { db, getUserWithUID } from '../../firebase';
+import PenLoading from '../PenLoading';
 
 const Posts = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const Posts = () => {
   const posts = useAppSelector(selectPosts);
 
   const loading = useAppSelector(selectLoading);
+  const postLoading = useAppSelector(selectPostLoading);
   const user = useAppSelector(selectUser);
 
   async function handleDeleteClick(postID?: string) {
@@ -51,34 +54,7 @@ const Posts = () => {
     }
   }
 
-  if (loading)
-    return (
-      <div>
-        {[...Array(4).keys()].map((number) => (
-          <div
-            key={number}
-            className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] space-y-1'>
-            <div className='flex flex-wrap items-center justify-between'>
-              <div className='flex items-center gap-[10px]'>
-                <div className='animate-pulse bg-gray-400 h-[40px] w-[40px] rounded-full'></div>
-
-                <div className='animate-pulse bg-gray-400 h-[24px] w-[250px]'></div>
-              </div>
-
-              <div className='animate-pulse bg-gray-400 h-[24px] w-[100px]'></div>
-            </div>
-
-            <div className='animate-pulse bg-gray-400 h-[30px] w-full'></div>
-
-            <div className='flex justify-between flex-wrap'>
-              <div className='animate-pulse bg-gray-400 h-[25px] w-[80px]'></div>
-
-              <div className='animate-pulse bg-gray-400 h-[25px] w-[25px]'></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+  if (loading || postLoading) return <PenLoading />;
 
   if (postsByUserID.length === 0)
     return <div className='text-center'>Bạn chưa có bài viết nào</div>;
@@ -99,6 +75,7 @@ const Posts = () => {
 
                 <div className='flex'>
                   <button
+                    title='Sửa bài viết'
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate('/edit-post', { state: { id: documentID } });
@@ -108,6 +85,7 @@ const Posts = () => {
                   </button>
 
                   <button
+                    title='Xoá bài viết'
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteClick(documentID);

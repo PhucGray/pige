@@ -1,12 +1,11 @@
 import { getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks/reduxHooks';
 import PostsList from '../components/PostsList';
 import { selectUser } from '../features/user/userSlice';
 import { postsCollectionRef } from '../firebase';
 import { PostType } from '../types';
-import { capitalize } from '../utils';
 
 const Search = () => {
   const user = useAppSelector(selectUser);
@@ -21,8 +20,6 @@ const Search = () => {
       where('searchKeywords', 'array-contains', keyword?.toLocaleLowerCase()),
     );
     const postsDocs = await getDocs(q);
-
-    console.log(postsDocs.docs.length);
 
     if (postsDocs.empty) {
     } else {

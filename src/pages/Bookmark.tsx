@@ -1,13 +1,22 @@
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks/reduxHooks';
-import { selectSavedPosts } from '../features/post/postSlice';
-import { selectUser } from '../features/user/userSlice';
+import PenLoading from '../components/PenLoading';
+import {
+  selectPostLoading,
+  selectSavedPosts,
+} from '../features/post/postSlice';
+import { selectLoading, selectUser } from '../features/user/userSlice';
 
 const Bookmark = () => {
   const navigate = useNavigate();
   const posts = useAppSelector(selectSavedPosts);
   const user = useAppSelector(selectUser);
+
+  const userLoading = useAppSelector(selectLoading);
+  const postLoading = useAppSelector(selectPostLoading);
+
+  if (userLoading || postLoading) return <PenLoading />;
 
   if (posts.length === 0)
     return (
