@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { RiCheckFill, RiCloseFill } from 'react-icons/ri';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
-import { selectAlert, closeAlert } from '../features/alert/alertSlice';
+import { closeAlert, selectAlert } from '../features/alert/alertSlice';
 
 const Alert = () => {
   const dispatch = useAppDispatch();

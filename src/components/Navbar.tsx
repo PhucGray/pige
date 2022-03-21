@@ -1,5 +1,5 @@
 import { signOut } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { BiEdit, BiSearch } from 'react-icons/bi';
 import { BsBookmark } from 'react-icons/bs';
 import { CgFileDocument } from 'react-icons/cg';
@@ -18,10 +18,19 @@ const Navbar = () => {
   const user = useAppSelector(selectUser);
   const loading = useAppSelector(selectLoading);
 
-  const [isSearching, setIsSearching] = useState(false);
-
   const size = useWindowSize();
   const isLaptopUp = size.width && size.width >= 768;
+
+  const [isSearching, setIsSearching] = useState(false);
+  const [search, setSearch] = useState('');
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+
+    if (!search.trim()) return setSearch('');
+
+    navigate(`/search?q=${search}`);
+  }
 
   useEffect(() => {
     if (isLaptopUp) setIsSearching(false);
@@ -40,7 +49,8 @@ const Navbar = () => {
           <MdArrowBack />
         </button>
       )}
-      <div
+      <form
+        onSubmit={handleSubmit}
         className={`flex flex-1 h-[45px] max-w-[500px] mr-[10px]
             ${
               isSearching || isLaptopUp
@@ -50,6 +60,8 @@ const Navbar = () => {
             `}>
         {(isSearching || isLaptopUp) && (
           <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             type='text'
             placeholder='Nhập từ khoá'
             className='flex-1 form-control'
@@ -69,7 +81,7 @@ const Navbar = () => {
           }}>
           <BiSearch className='mx-auto' />
         </button>
-      </div>
+      </form>
 
       {loading && <>.</>}
 

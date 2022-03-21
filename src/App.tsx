@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import MyPost from './pages/MyPosts';
 import NewPost from './pages/NewPost';
 import Post from './pages/Post';
+import Search from './pages/Search';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import PrivateRoute from './routes/PrivateRoute';
@@ -50,6 +51,7 @@ const App = () => {
         <Route path='/' element={<NormalLayout />}>
           <Route index element={<Home />} />
           <Route path='post/:id' element={<Post />} />
+
           <Route
             path='my-posts'
             element={
@@ -66,6 +68,7 @@ const App = () => {
               </PrivateRoute>
             }
           />
+          <Route path='search' element={<Search />} />
         </Route>
 
         <Route

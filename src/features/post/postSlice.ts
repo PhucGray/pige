@@ -74,7 +74,7 @@ const getSavedPosts = async (uid: string) => {
 };
 
 const getPopularPosts = async () => {
-  const q = query(postsCollectionRef, orderBy('hearts', 'desc'), limit(3));
+  const q = query(postsCollectionRef, orderBy('likes', 'desc'), limit(3));
 
   const posts = [] as PostType[];
 
@@ -86,7 +86,7 @@ const getPopularPosts = async () => {
     for (let i = 0; i < docs.length; i++) {
       const postData = docs[i].data() as PostType;
 
-      if (postData.hearts.length === 0) continue;
+      if (postData.likes.length === 0) continue;
 
       const userData = await getUserWithUID(postData.uid);
 

@@ -2,20 +2,28 @@ import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import moment from 'moment';
 import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
-import { fetchSavedPosts, selectPosts } from '../../features/post/postSlice';
-import {
-  selectLoading,
-  selectUser,
-  setUser,
-} from '../../features/user/userSlice';
-import { db } from '../../firebase';
+// import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
+// import { fetchSavedPosts, selectPosts } from '../../features/post/postSlice';
+// import {
+//   selectLoading,
+//   selectUser,
+//   setUser,
+// } from '../../features/user/userSlice';
+// import { db } from '../../firebase';
+import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
+import { fetchSavedPosts } from '../features/post/postSlice';
+import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
+import { db } from '../firebase';
+import { PostType } from '../types';
 
-const PostFeeds = () => {
+interface PostsListProps {
+  posts: PostType[];
+}
+
+const PostsList = ({ posts }: PostsListProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const posts = useAppSelector(selectPosts);
   const loading = useAppSelector(selectLoading);
   const user = useAppSelector(selectUser);
 
@@ -94,7 +102,7 @@ const PostFeeds = () => {
             documentID,
             displayName,
             photoURL,
-            hearts,
+            likes,
           }) => {
             return (
               <div
@@ -126,7 +134,7 @@ const PostFeeds = () => {
                     <div className='font-semibold'>{readTime} phút đọc</div>
                     <div className='ml-[10px] flex items-center gap-[5px]'>
                       <BsSuitHeartFill />
-                      {hearts.length}
+                      {likes.length}
                     </div>
                   </div>
 
@@ -150,4 +158,4 @@ const PostFeeds = () => {
   );
 };
 
-export default PostFeeds;
+export default PostsList;

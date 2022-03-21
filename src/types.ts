@@ -7,8 +7,9 @@ export interface PostType {
   createdAt: string;
   readTime: string;
 
-  hearts: string[];
+  likes: string[];
   comments: CommentType[];
+  searchKeywords: string[]
 
   documentID?: string;
   displayName?: string;

@@ -22,6 +22,7 @@ import { selectUser, setUser } from '../../features/user/userSlice';
 import { db, postsCollectionRef } from '../../firebase';
 import '../../styles/toolbar.css';
 import { PostType } from '../../types';
+import { createCombineWords } from '../../utils/generateKeywords';
 
 interface EditorProps {
   action: 'add' | 'edit';
@@ -144,14 +145,17 @@ const MyEditor = ({ action }: EditorProps) => {
         }),
       );
 
+    const searchKeywords = createCombineWords(title);
+
     const newPost = {
       uid: user?.uid,
       content: textareaRef.current.value,
       createdAt: new Date().toString(),
       readTime,
       title,
-      hearts: [],
+      likes: [],
       comments: [],
+      searchKeywords,
     } as PostType;
 
     const newPostDoc = await addDoc(postsCollectionRef, newPost);

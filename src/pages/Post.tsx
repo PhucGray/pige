@@ -36,9 +36,9 @@ const Post = () => {
       const userRef = doc(db, 'users', user.documentID);
       const postRef = doc(db, 'posts', currentPost.documentID);
 
-      if (currentPost.hearts.includes(user.uid)) {
+      if (currentPost.likes.includes(user.uid)) {
         await updateDoc(postRef, {
-          hearts: arrayRemove(user.uid),
+          likes: arrayRemove(user.uid),
         });
 
         await updateDoc(userRef, {
@@ -55,12 +55,12 @@ const Post = () => {
         dispatch(
           setCurrentPost({
             ...currentPost,
-            hearts: currentPost.hearts.filter((i) => i !== user.uid),
+            likes: currentPost.likes.filter((i) => i !== user.uid),
           }),
         );
       } else {
         await updateDoc(postRef, {
-          hearts: arrayUnion(user.uid),
+          likes: arrayUnion(user.uid),
         });
 
         await updateDoc(userRef, {
@@ -76,7 +76,7 @@ const Post = () => {
         dispatch(
           setCurrentPost({
             ...currentPost,
-            hearts: [...currentPost.hearts, user.uid],
+            likes: [...currentPost.likes, user.uid],
           }),
         );
       }
@@ -273,13 +273,13 @@ const Post = () => {
               onClick={handleLike}
               className={` ${
                 user?.uid &&
-                currentPost.hearts.includes(user.uid) &&
+                currentPost.likes.includes(user.uid) &&
                 'bg-slate-300'
               }
                   flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
                 cursor-pointer`}>
               <BsHeart />
-              {currentPost.hearts.length}
+              {currentPost.likes.length}
               <div>Yêu thích</div>
             </div>
 

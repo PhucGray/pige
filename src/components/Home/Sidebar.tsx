@@ -35,7 +35,7 @@ const Sidebar = () => {
               </div>
               <div className='flex items-center space-x-2'>
                 <BsSuitHeartFill />
-                <div>{p.hearts.length}</div>
+                <div>{p.likes.length}</div>
               </div>
               <div>{p.displayName}</div>
             </div>
