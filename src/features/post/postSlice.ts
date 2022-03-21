@@ -44,6 +44,35 @@ const getPosts = async () => {
   );
 };
 
+const getSavedPosts = async (uid: string) => {
+  const userData = await getUserWithUID(uid);
+
+  const querySnapshot = await getDocs(postsCollectionRef);
+
+  const posts = [] as PostType[];
+
+  const docs = querySnapshot.docs;
+
+  for (let i = 0; i < docs.length; i++) {
+    const postData = docs[i].data() as PostType;
+    const postID = docs[i].id;
+
+    if (userData?.savedPosts.includes(postID)) {
+      posts.push({
+        ...postData,
+        displayName: userData?.displayName,
+        documentID: postID,
+        photoURL: userData?.photoURL,
+      });
+    }
+  }
+
+  return posts.sort(
+    (p1, p2) =>
+      new Date(p2.createdAt).getTime() - new Date(p1.createdAt).getTime(),
+  );
+};
+
 const getPopularPosts = async () => {
   const q = query(postsCollectionRef, orderBy('hearts', 'desc'), limit(3));
 
@@ -56,6 +85,8 @@ const getPopularPosts = async () => {
 
     for (let i = 0; i < docs.length; i++) {
       const postData = docs[i].data() as PostType;
+
+      if (postData.hearts.length === 0) continue;
 
       const userData = await getUserWithUID(postData.uid);
 
@@ -122,6 +153,14 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   return posts;
 });
 
+export const fetchSavedPosts = createAsyncThunk(
+  'posts/fetchSavedPosts',
+  async (uid: string) => {
+    const posts = await getSavedPosts(uid);
+    return posts;
+  },
+);
+
 export const fetchPopularPosts = createAsyncThunk(
   'posts/fetchPopularPosts',
   async () => {
@@ -152,6 +191,7 @@ interface PostsProps {
   postsByUserID: PostType[];
   polularPosts: PostType[];
   comments: CommentType[];
+  savedPosts: PostType[];
 }
 
 const initialState: PostsProps = {
@@ -160,6 +200,7 @@ const initialState: PostsProps = {
   postsByUserID: [],
   polularPosts: [],
   comments: [],
+  savedPosts: [],
 };
 
 const postSlice = createSlice({
@@ -179,6 +220,10 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
       state.posts = action.payload;
+    });
+
+    builder.addCase(fetchSavedPosts.fulfilled, (state, action) => {
+      state.savedPosts = action.payload;
     });
 
     builder.addCase(fetchPopularPosts.fulfilled, (state, action) => {
@@ -201,5 +246,6 @@ export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>
   state.post.postsByUserID;
 export const selectPopularPosts = (state: RootState) => state.post.polularPosts;
+export const selectSavedPosts = (state: RootState) => state.post.savedPosts;
 
 export default postSlice.reducer;

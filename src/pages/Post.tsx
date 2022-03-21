@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Loading from '../components/Loading';
 import {
   fetchPostByID,
+  fetchSavedPosts,
   selectCurrentPost,
   setCurrentPost,
 } from '../features/post/postSlice';
@@ -152,6 +153,38 @@ const Post = () => {
     }
   }
 
+  async function handleBookmark(postID: string) {
+    if (user?.documentID) {
+      const userRef = doc(db, 'users', user.documentID);
+
+      if (user.savedPosts.includes(postID)) {
+        await updateDoc(userRef, {
+          savedPosts: arrayRemove(postID),
+        });
+
+        dispatch(
+          setUser({
+            ...user,
+            savedPosts: [...user.savedPosts].filter((p) => p !== postID),
+          }),
+        );
+      } else {
+        await updateDoc(userRef, {
+          savedPosts: arrayUnion(postID),
+        });
+
+        dispatch(
+          setUser({
+            ...user,
+            savedPosts: [...user.savedPosts, postID],
+          }),
+        );
+      }
+
+      dispatch(fetchSavedPosts(user.uid));
+    }
+  }
+
   useEffect(() => {
     dispatch(fetchPostByID(urlParams.id));
   }, [urlParams.id]);
@@ -205,7 +238,16 @@ const Post = () => {
               </div>
             </div>
 
-            <BsBookmarkPlus className='ml-auto text-[24px]  hover:scale-125 cursor-pointer' />
+            <BsBookmarkPlus
+              onClick={() =>
+                currentPost.documentID && handleBookmark(currentPost.documentID)
+              }
+              className={`ml-auto text-[24px] hover:scale-125 cursor-pointer ${
+                currentPost.documentID &&
+                user?.savedPosts.includes(currentPost.documentID) &&
+                'text-primary'
+              }`}
+            />
           </div>
           <div className='mt-[20px] text-[40px] font-bold mb-[15px]'>
             {currentPost.title}
@@ -230,7 +272,8 @@ const Post = () => {
             <div
               onClick={handleLike}
               className={` ${
-                currentPost.hearts.includes(user?.uid || '???') &&
+                user?.uid &&
+                currentPost.hearts.includes(user.uid) &&
                 'bg-slate-300'
               }
                   flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]

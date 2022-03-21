@@ -1,9 +1,9 @@
-import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import moment from 'moment';
 import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
-import { selectPosts } from '../../features/post/postSlice';
+import { fetchSavedPosts, selectPosts } from '../../features/post/postSlice';
 import {
   selectLoading,
   selectUser,
@@ -23,16 +23,31 @@ const PostFeeds = () => {
     if (user?.documentID) {
       const userRef = doc(db, 'users', user.documentID);
 
-      await updateDoc(userRef, {
-        savedPosts: arrayUnion(postID),
-      });
+      if (user.savedPosts.includes(postID)) {
+        await updateDoc(userRef, {
+          savedPosts: arrayRemove(postID),
+        });
 
-      dispatch(
-        setUser({
-          ...user,
-          savedPosts: [...user.savedPosts, postID],
-        }),
-      );
+        dispatch(
+          setUser({
+            ...user,
+            savedPosts: [...user.savedPosts].filter((p) => p !== postID),
+          }),
+        );
+      } else {
+        await updateDoc(userRef, {
+          savedPosts: arrayUnion(postID),
+        });
+
+        dispatch(
+          setUser({
+            ...user,
+            savedPosts: [...user.savedPosts, postID],
+          }),
+        );
+      }
+
+      dispatch(fetchSavedPosts(user.uid));
     }
   }
 
@@ -117,12 +132,13 @@ const PostFeeds = () => {
 
                   <BsBookmarkPlus
                     className={`text-[22px] md:text-[25px] hover:scale-125 ${
-                      user?.savedPosts.includes(documentID || '??') &&
+                      documentID &&
+                      user?.savedPosts.includes(documentID) &&
                       'text-primary'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleBookmark(documentID || '????');
+                      if (documentID) handleBookmark(documentID);
                     }}
                   />
                 </div>
