@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks/reduxHooks';
-import { selectLoading, selectUser } from '../features/user/userSlice';
+import { selectUserLoading, selectUser } from '../features/user/userSlice';
 
 const PrivateRoute: FC = ({ children }) => {
   const user = useAppSelector(selectUser);
-  const loading = useAppSelector(selectLoading);
+  const userLoading = useAppSelector(selectUserLoading);
 
-  if (!user && !loading) return <Navigate to='/sign-in' />;
+  if (!user && !userLoading) return <Navigate to='/sign-in' />;
 
   return <>{children}</>;
 };

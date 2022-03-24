@@ -196,7 +196,7 @@ const initialState: PostsProps = {
   polularPosts: [],
   comments: [],
   savedPosts: [],
-  postLoading: false,
+  postLoading: true,
 };
 
 const postSlice = createSlice({
@@ -223,7 +223,6 @@ const postSlice = createSlice({
 
     builder.addCase(fetchSavedPosts.fulfilled, (state, action) => {
       state.savedPosts = action.payload;
-      state.postLoading = false;
     });
 
     builder.addCase(fetchPopularPosts.fulfilled, (state, action) => {
@@ -236,7 +235,6 @@ const postSlice = createSlice({
 
     builder.addCase(fetchPostsByUserID.fulfilled, (state, action) => {
       state.postsByUserID = action.payload;
-      state.postLoading = false;
     });
   },
 });

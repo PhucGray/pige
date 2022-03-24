@@ -3,8 +3,12 @@ import moment from 'moment';
 import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
-import { fetchSavedPosts } from '../features/post/postSlice';
-import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
+import { fetchSavedPosts, selectPostLoading } from '../features/post/postSlice';
+import {
+  selectUserLoading,
+  selectUser,
+  setUser,
+} from '../features/user/userSlice';
 import { db } from '../firebase';
 import { PostType } from '../types';
 import PenLoading from './PenLoading';
@@ -17,7 +21,8 @@ const PostsList = ({ posts }: PostsListProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const loading = useAppSelector(selectLoading);
+  const userLoading = useAppSelector(selectUserLoading);
+  const postLoading = useAppSelector(selectPostLoading);
   const user = useAppSelector(selectUser);
 
   async function handleBookmark(postID: string) {
@@ -52,7 +57,7 @@ const PostsList = ({ posts }: PostsListProps) => {
     }
   }
 
-  if (loading) return <PenLoading />;
+  if (userLoading || postLoading) return <PenLoading />;
 
   if (posts.length === 0)
     return <div className='text-center flex-1'>Chưa có bài viết nào</div>;

@@ -1,24 +1,32 @@
 import moment from 'moment';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../app/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import PenLoading from '../components/PenLoading';
 import {
   selectPostLoading,
   selectSavedPosts,
+  setPostLoading,
 } from '../features/post/postSlice';
-import { selectLoading, selectUser } from '../features/user/userSlice';
+import { selectUserLoading, selectUser } from '../features/user/userSlice';
 
 const Bookmark = () => {
   const navigate = useNavigate();
-  const posts = useAppSelector(selectSavedPosts);
+  const dispatch = useAppDispatch();
+
+  const savedPosts = useAppSelector(selectSavedPosts);
   const user = useAppSelector(selectUser);
 
-  const userLoading = useAppSelector(selectLoading);
+  const userLoading = useAppSelector(selectUserLoading);
   const postLoading = useAppSelector(selectPostLoading);
+
+  useEffect(() => {
+    if (savedPosts) dispatch(setPostLoading(false));
+  }, [savedPosts]);
 
   if (userLoading || postLoading) return <PenLoading />;
 
-  if (posts.length === 0)
+  if (savedPosts.length === 0)
     return (
       <div>
         <div className='text-[40px] font-bold text-center mt-[20px]'>
@@ -40,8 +48,8 @@ const Bookmark = () => {
         style={{
           gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
         }}>
-        {posts &&
-          posts
+        {savedPosts &&
+          savedPosts
             .filter(
               (p) => p.documentID && user?.savedPosts.includes(p.documentID),
             )

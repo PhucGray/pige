@@ -1,5 +1,6 @@
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import moment from 'moment';
+import { useEffect } from 'react';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
@@ -8,10 +9,11 @@ import {
   selectPostLoading,
   selectPosts,
   selectPostsByUserID,
+  setPostLoading,
   setPosts,
   setPostsByUserID,
 } from '../../features/post/postSlice';
-import { selectLoading, selectUser } from '../../features/user/userSlice';
+import { selectUserLoading, selectUser } from '../../features/user/userSlice';
 import { db, getUserWithUID } from '../../firebase';
 import PenLoading from '../PenLoading';
 
@@ -22,7 +24,7 @@ const Posts = () => {
   const postsByUserID = useAppSelector(selectPostsByUserID);
   const posts = useAppSelector(selectPosts);
 
-  const loading = useAppSelector(selectLoading);
+  const userLoading = useAppSelector(selectUserLoading);
   const postLoading = useAppSelector(selectPostLoading);
   const user = useAppSelector(selectUser);
 
@@ -54,7 +56,11 @@ const Posts = () => {
     }
   }
 
-  if (loading || postLoading) return <PenLoading />;
+  useEffect(() => {
+    if (postsByUserID) dispatch(setPostLoading(false));
+  }, [postsByUserID]);
+
+  if (userLoading || postLoading) return <PenLoading />;
 
   if (postsByUserID.length === 0)
     return <div className='text-center'>Bạn chưa có bài viết nào</div>;

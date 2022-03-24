@@ -8,7 +8,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { useWindowSize } from '../app/hooks/useWindowSize';
 import { setCurrentPost } from '../features/post/postSlice';
-import { selectLoading, selectUser, setUser } from '../features/user/userSlice';
+import {
+  selectUserLoading,
+  selectUser,
+  setUser,
+} from '../features/user/userSlice';
 import { auth } from '../firebase';
 
 const Navbar = () => {
@@ -16,13 +20,14 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector(selectUser);
-  const loading = useAppSelector(selectLoading);
+  const userLoading = useAppSelector(selectUserLoading);
 
   const size = useWindowSize();
   const isLaptopUp = size.width && size.width >= 768;
 
   const [isSearching, setIsSearching] = useState(false);
   const [search, setSearch] = useState('');
+  const [dropdown, setDropdown] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -32,9 +37,18 @@ const Navbar = () => {
     navigate(`/search?q=${search}`);
   }
 
+  function closeDropdown() {
+    setDropdown(false);
+  }
+
   useEffect(() => {
     if (isLaptopUp) setIsSearching(false);
   }, [isLaptopUp]);
+
+  useEffect(() => {
+    if (dropdown) window.addEventListener('click', closeDropdown);
+    else window.removeEventListener('click', closeDropdown);
+  }, [dropdown]);
 
   return (
     <div
@@ -83,9 +97,9 @@ const Navbar = () => {
         </button>
       </form>
 
-      {loading && <>.</>}
+      {userLoading && <>.</>}
 
-      {!isSearching && !loading && (
+      {!isSearching && !userLoading && (
         <>
           {!user && (
             <Link to='/sign-in' className='cursor-pointer hover:text-primary'>
@@ -112,37 +126,45 @@ const Navbar = () => {
                   <BiEdit size={30} />
                 </button>
 
-                <div className='relative group'>
+                <div className='relative'>
                   <img
                     src={user.photoURL || '/default-avatar.jpg'}
-                    alt='awf'
+                    alt='avatar'
+                    className='rounded-full cursor-pointer'
                     height={40}
                     width={40}
-                    className='rounded-full'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDropdown(!dropdown);
+                    }}
                   />
 
-                  <div className='absolute min-w-[240px] right-0 border bg-white py-[5px] rounded-lg hidden group-hover:block'>
-                    <Link
-                      to='/my-posts'
-                      className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
-                      <span className='min-w-[30px]'>
-                        <CgFileDocument />
-                      </span>
-                      <span>Bài viết của bạn</span>
-                    </Link>
-                    <div
-                      onClick={async () => {
-                        await signOut(auth);
-                        navigate('/sign-in');
-                        dispatch(setUser(null));
-                      }}
-                      className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
-                      <span className='min-w-[30px]'>
-                        <MdOutlineLogout />
-                      </span>
-                      <span>Đăng xuất</span>
-                    </div>
-                  </div>
+                  {dropdown && (
+                    <>
+                      <div className='absolute min-w-[240px] right-0 border bg-white py-[5px] rounded-lg'>
+                        <Link
+                          to='/my-posts'
+                          className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
+                          <span className='min-w-[30px]'>
+                            <CgFileDocument />
+                          </span>
+                          <span>Bài viết của bạn</span>
+                        </Link>
+                        <div
+                          onClick={async () => {
+                            await signOut(auth);
+                            navigate('/sign-in');
+                            dispatch(setUser(null));
+                          }}
+                          className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
+                          <span className='min-w-[30px]'>
+                            <MdOutlineLogout />
+                          </span>
+                          <span>Đăng xuất</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </>

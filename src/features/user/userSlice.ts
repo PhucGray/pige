@@ -39,6 +39,6 @@ const userSlice = createSlice({
 
 export const { setUser, setLoading } = userSlice.actions;
 export const selectUser = (state: RootState) => state.user.user;
-export const selectLoading = (state: RootState) => state.user.loading;
+export const selectUserLoading = (state: RootState) => state.user.loading;
 
 export default userSlice.reducer;

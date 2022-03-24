@@ -9,7 +9,6 @@ const MyPosts = () => {
   const user = useAppSelector(selectUser);
   useEffect(() => {
     if (user?.uid) {
-      dispatch(setPostLoading(true));
       dispatch(fetchPostsByUserID(user));
     }
   }, [user]);
