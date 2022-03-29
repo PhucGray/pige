@@ -14,10 +14,12 @@ import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
 import Bookmark from './pages/Bookmark';
 import EditPost from './pages/EditPost';
+import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import MyPost from './pages/MyPosts';
 import NewPost from './pages/NewPost';
 import Post from './pages/Post';
+import ResetPassword from './pages/ResetPassword';
 import Search from './pages/Search';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -97,6 +99,8 @@ const App = () => {
 
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />
+        <Route path='forgot-password' element={<ForgotPassword />} />
+        <Route path='reset-password' element={<ResetPassword />} />
       </Routes>
 
       {alert.show && <Alert />}

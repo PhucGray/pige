@@ -177,7 +177,7 @@ const SignUp = () => {
           <input
             ref={emailRef}
             className={`form-control ${emailError && 'input-error'}`}
-            type='text'
+            type='email'
             placeholder='Email'
             value={email}
             onChange={(e) => {
@@ -223,7 +223,7 @@ const SignUp = () => {
           <button
             className={`${
               loading ? 'bg-slate-400' : 'bg-primary'
-            } flex justify-center items-center mx-auto gap-2 text-white hover:bg-darkPrimary w-[80%] h-[40px] rounded-[7px]`}>
+            } flex justify-center items-center mx-auto gap-2 text-white hover:bg-darkPrimary w-full h-[40px] rounded-[7px]`}>
             {loading && <SiReact fontSize={25} className='animate-spin' />}
             Đăng ký
           </button>
