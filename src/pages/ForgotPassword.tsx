@@ -92,12 +92,6 @@ const ForgotPassword = () => {
             Gửi yêu cầu
           </button>
         </div>
-
-        <div className='flex items-center gap-[20px] px-[20px]'>
-          <div className='bg-slate-400 h-[1px] flex-1'></div>
-          <div>hoặc đăng nhập với</div>
-          <div className='bg-slate-400 h-[1px] flex-1'></div>
-        </div>
       </form>
     </div>
   );
