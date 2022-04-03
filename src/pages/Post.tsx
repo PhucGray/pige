@@ -6,7 +6,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BsBookmarkPlus, BsChat, BsHeart } from 'react-icons/bs';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import Loading from '../components/Loading';
 import PenLoading from '../components/PenLoading';
@@ -22,6 +22,7 @@ import { CommentType } from '../types';
 
 const Post = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const urlParams = useParams() as { id: string };
 
   const currentPost = useAppSelector(selectCurrentPost);
@@ -241,9 +242,12 @@ const Post = () => {
                   ? 'Huỷ lưu bài viêt'
                   : 'Lưu bài viết'
               }
-              onClick={() =>
-                currentPost.documentID && handleBookmark(currentPost.documentID)
-              }
+              onClick={() => {
+                if (!user) return navigate('/sign-in');
+
+                if (currentPost.documentID)
+                  handleBookmark(currentPost.documentID);
+              }}
               className={`ml-auto text-[24px] hover:scale-125 cursor-pointer ${
                 currentPost.documentID &&
                 user?.savedPosts.includes(currentPost.documentID) &&
@@ -272,7 +276,11 @@ const Post = () => {
           )}
           <div className='flex gap-2 mb-2'>
             <div
-              onClick={handleLike}
+              onClick={() => {
+                if (!user) return navigate('/sign-in');
+
+                handleLike();
+              }}
               className={` ${
                 user?.uid &&
                 currentPost.likes.includes(user.uid) &&
@@ -286,7 +294,10 @@ const Post = () => {
             </div>
 
             <div
-              onClick={() => setShowComment(!showComment)}
+              onClick={() => {
+                if (!user) return navigate('/sign-in');
+                setShowComment(!showComment);
+              }}
               className='flex items-center w-fit rounded-[10px] gap-2 px-[20px] py-[10px]
                 cursor-pointer'>
               <BsChat />

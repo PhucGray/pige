@@ -122,6 +122,8 @@ const PostsList = ({ posts }: PostsListProps) => {
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (!user) return navigate('/sign-in');
+
                       if (documentID) handleBookmark(documentID);
                     }}
                   />
