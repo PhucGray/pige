@@ -13,9 +13,8 @@ import {
   setPosts,
   setPostsByUserID,
 } from '../../features/post/postSlice';
-import { selectUserLoading, selectUser } from '../../features/user/userSlice';
+import { selectUser, selectUserLoading } from '../../features/user/userSlice';
 import { db, getUserWithUID } from '../../firebase';
-import PenLoading from '../PenLoading';
 
 const Posts = () => {
   const navigate = useNavigate();
@@ -60,7 +59,24 @@ const Posts = () => {
     if (postsByUserID) dispatch(setPostLoading(false));
   }, [postsByUserID]);
 
-  if (userLoading || postLoading) return <PenLoading />;
+  if (postLoading)
+    return (
+      <div className='overflow-hidden'>
+        {[0, 1, 2].map((i) => {
+          return (
+            <div
+              key={i}
+              className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] space-y-1'>
+              <div className='animate-pulse bg-slate-400 h-[24px] w-[80px]'></div>
+
+              <div className='animate-pulse bg-slate-400 h-[30px] w-[80%]'></div>
+
+              <div className='animate-pulse bg-slate-400 h-[24px] w-[75px]'></div>
+            </div>
+          );
+        })}
+      </div>
+    );
 
   if (postsByUserID.length === 0)
     return <div className='text-center'>Bạn chưa có bài viết nào</div>;

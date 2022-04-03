@@ -30,6 +30,10 @@ const userSlice = createSlice({
   reducers: {
     setUser: (state, { payload }: PayloadAction<User | null>) => {
       state.user = payload;
+
+      if (payload?.photoURL) {
+        localStorage.setItem('photoURL', payload.photoURL);
+      }
     },
     setLoading: (state, { payload }: PayloadAction<boolean>) => {
       state.loading = payload;

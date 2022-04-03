@@ -6,10 +6,9 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BsBookmarkPlus, BsChat, BsHeart } from 'react-icons/bs';
+import { HiOutlineBookOpen } from 'react-icons/hi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
-import Loading from '../components/Loading';
-import PenLoading from '../components/PenLoading';
 import {
   fetchPostByID,
   fetchSavedPosts,
@@ -211,7 +210,12 @@ const Post = () => {
     }
   }, [currentPost]);
 
-  if (!currentPost) return <PenLoading />;
+  if (!currentPost)
+    return (
+      <div className='flex relative justify-center items-center h-full'>
+        <HiOutlineBookOpen size={45} className='animate-bounce' />
+      </div>
+    );
 
   return (
     <>
@@ -329,12 +333,6 @@ const Post = () => {
                     className='bg-primary text-white font-bold px-[20px] py-[10px]'>
                     Bình luận
                   </button>
-                </div>
-              )}
-
-              {commentLoading && (
-                <div className='my-[15px]'>
-                  <Loading />
                 </div>
               )}
             </form>

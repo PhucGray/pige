@@ -2,13 +2,12 @@ import moment from 'moment';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
-import PenLoading from '../components/PenLoading';
 import {
   selectPostLoading,
   selectSavedPosts,
   setPostLoading,
 } from '../features/post/postSlice';
-import { selectUserLoading, selectUser } from '../features/user/userSlice';
+import { selectUser, selectUserLoading } from '../features/user/userSlice';
 
 const Bookmark = () => {
   const navigate = useNavigate();
@@ -24,7 +23,26 @@ const Bookmark = () => {
     if (savedPosts) dispatch(setPostLoading(false));
   }, [savedPosts]);
 
-  if (userLoading || postLoading) return <PenLoading />;
+  if (postLoading)
+    return (
+      <div>
+        <div className='text-[40px] font-bold text-center mt-[20px]'>
+          Bài viết đã lưu
+        </div>
+
+        <div
+          className='grid gap-[20px] pt-[40px] px-[40px] overflow-hidden'
+          style={{
+            gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
+          }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className='animate-pulse bg-slate-400 rounded-[10px] px-[20px] py-[10px] h-[100px]'></div>
+          ))}
+        </div>
+      </div>
+    );
 
   if (savedPosts.length === 0)
     return (

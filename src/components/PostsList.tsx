@@ -4,14 +4,9 @@ import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { fetchSavedPosts, selectPostLoading } from '../features/post/postSlice';
-import {
-  selectUserLoading,
-  selectUser,
-  setUser,
-} from '../features/user/userSlice';
+import { selectUser, setUser } from '../features/user/userSlice';
 import { db } from '../firebase';
 import { PostType } from '../types';
-import PenLoading from './PenLoading';
 
 interface PostsListProps {
   posts: PostType[];
@@ -21,7 +16,6 @@ const PostsList = ({ posts }: PostsListProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const userLoading = useAppSelector(selectUserLoading);
   const postLoading = useAppSelector(selectPostLoading);
   const user = useAppSelector(selectUser);
 
@@ -57,7 +51,38 @@ const PostsList = ({ posts }: PostsListProps) => {
     }
   }
 
-  if (userLoading || postLoading) return <PenLoading />;
+  if (postLoading)
+    return (
+      <div className='flex-1 overflow-hidden'>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <>
+            <div className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] space-y-1'>
+              <div className='flex flex-wrap items-center justify-between'>
+                <div className='flex items-center gap-[10px]'>
+                  <div className='animate-pulse bg-slate-400 w-[40px] h-[40px] rounded-full'></div>
+
+                  <div className='animate-pulse bg-slate-400 h-[24px] w-[150px]'></div>
+                </div>
+
+                <div className='animate-pulse bg-slate-400 h-[24px] w-[70px]'></div>
+              </div>
+
+              <div className='animate-pulse bg-slate-400 h-[24px] w-full max-w-[600px]'></div>
+
+              <div className='flex justify-between flex-wrap'>
+                <div className='flex flex-wrap'>
+                  <div className='animate-pulse bg-slate-400 h-[25px] w-[80px]'></div>
+
+                  <div className='animate-pulse bg-slate-400 h-[25px] w-[30px] ml-[5px]'></div>
+                </div>
+
+                <div className='animate-pulse bg-slate-400 h-[25px] w-[25px]'></div>
+              </div>
+            </div>
+          </>
+        ))}
+      </div>
+    );
 
   if (posts.length === 0)
     return <div className='text-center flex-1'>Chưa có bài viết nào</div>;

@@ -99,7 +99,26 @@ const Navbar = () => {
           </button>
         </form>
 
-        {userLoading && <>.</>}
+        {userLoading && (
+          <div className='flex items-center gap-[10px]'>
+            <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
+              <BsBookmark size={25} />
+            </button>
+            <button className='rounded-[10px] w-[45px] h-[45px] flex justify-center items-center hover:bg-slate-100'>
+              <BiEdit size={30} />
+            </button>
+
+            <div className='relative'>
+              <img
+                src={localStorage.getItem('photoURL') || 'random'}
+                alt='avatar'
+                className='rounded-full cursor-pointer'
+                height={40}
+                width={40}
+              />
+            </div>
+          </div>
+        )}
 
         {!isSearching && !userLoading && (
           <>
@@ -155,6 +174,9 @@ const Navbar = () => {
                           <div
                             onClick={async () => {
                               await signOut(auth);
+
+                              // localStorage.removeItem('photoURL');
+                              localStorage.clear();
                               navigate('/sign-in');
                               dispatch(setUser(null));
                             }}
