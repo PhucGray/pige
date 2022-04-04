@@ -22,14 +22,6 @@
   .content img {
     @apply mx-auto;
   }
-
-  h1 {
-    @apply font-bold text-[30px] mt-[10px] mb-[10px];
-  }
-
-  h2 {
-    @apply font-bold text-[18px] mt-[5px] mb-[5px];
-  }
 }
 
 @layer components {
@@ -44,6 +36,18 @@
   .error-message {
     @apply text-red-500 italic text-left;
   }
+}
+
+h1 span {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+h2 span {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 5px 0;
 }
 
 pre {
