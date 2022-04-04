@@ -5,7 +5,9 @@ export const NormalLayout = () => {
   return (
     <div className='h-screen flex flex-col'>
       <Navbar />
-      <Outlet />
+      <div className='mt-[60px]'>
+        <Outlet />
+      </div>
     </div>
   );
 };
