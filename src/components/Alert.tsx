@@ -18,7 +18,7 @@ const Alert = () => {
   return (
     <>
       <div
-        className={`fixed top-[40px] left-[50%] translate-x-[-50%] w-[90%] max-w-[500px] z-50 
+        className={`z-[100] fixed top-[40px] left-[50%] translate-x-[-50%] w-[90%] max-w-[500px] 
         ${alert.alert?.type === 'success' ? 'bg-green-600' : 'bg-red-500'}
         text-white animate-disappear`}>
         <div

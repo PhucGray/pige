@@ -9,8 +9,8 @@ import { useAppDispatch, useAppSelector } from '../app/hooks/reduxHooks';
 import { useWindowSize } from '../app/hooks/useWindowSize';
 import { setCurrentPost } from '../features/post/postSlice';
 import {
-  selectUserLoading,
   selectUser,
+  selectUserLoading,
   setUser,
 } from '../features/user/userSlice';
 import { auth } from '../firebase';
@@ -48,15 +48,18 @@ const Navbar = () => {
   useEffect(() => {
     if (dropdown) window.addEventListener('click', closeDropdown);
     else window.removeEventListener('click', closeDropdown);
+
+    return () => window.removeEventListener('click', closeDropdown);
   }, [dropdown]);
 
   return (
     <div
       className={`fixed top-0 left-0 right-0 h-[60px] 
-      z-[99999999999] border-b-[1px] bg-white
+      z-[99] border-b-[1px] bg-white
       ${isLaptopUp ? 'px-[40px] gap-[20px]' : 'px-[20px]'}`}>
       <div className='max-w-[1200px] h-full mx-auto my-auto flex items-center justify-between'>
         {!isSearching && <Link to='/'>pige</Link>}
+
         {isSearching && (
           <button
             className='rounded-[10px] text-[24px] h-[45px] flex justify-center items-center w-[45px] hover:bg-slate-100 mr-[3px]'
@@ -164,7 +167,7 @@ const Navbar = () => {
                         <div className='absolute min-w-[240px] right-0 border bg-white py-[5px] rounded-lg'>
                           <Link
                             to='/my-posts'
-                            className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
+                            className={`px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100`}>
                             <span className='min-w-[30px]'>
                               <CgFileDocument />
                             </span>
@@ -172,12 +175,10 @@ const Navbar = () => {
                           </Link>
                           <div
                             onClick={async () => {
+                              localStorage.removeItem('photoURL');
                               await signOut(auth);
-
-                              // localStorage.removeItem('photoURL');
-                              localStorage.clear();
-                              navigate('/sign-in');
                               dispatch(setUser(null));
+                              navigate('/sign-in');
                             }}
                             className='px-[20px] flex items-center space-x-[5px] text-[18px] h-[40px] cursor-pointer hover:bg-slate-100'>
                             <span className='min-w-[30px]'>

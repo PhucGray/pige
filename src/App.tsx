@@ -5,11 +5,7 @@ import { useAppDispatch, useAppSelector } from './app/hooks/reduxHooks';
 import Alert from './components/Alert';
 import { NormalLayout } from './components/Layout';
 import { selectAlert } from './features/alert/alertSlice';
-import {
-  fetchPosts,
-  fetchSavedPosts,
-  setPostLoading,
-} from './features/post/postSlice';
+import { fetchSavedPosts, setPostLoading } from './features/post/postSlice';
 import { setLoading, setUser } from './features/user/userSlice';
 import { auth, getUserWithUID } from './firebase';
 import Bookmark from './pages/Bookmark';
@@ -31,7 +27,6 @@ const App = () => {
 
   useEffect(() => {
     dispatch(setPostLoading(true));
-    dispatch(fetchPosts());
   }, []);
 
   useEffect(() => {

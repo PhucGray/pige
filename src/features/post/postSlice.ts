@@ -1,21 +1,42 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   doc,
+  DocumentData,
   getDoc,
   getDocs,
   limit,
   orderBy,
   query,
+  startAfter,
 } from 'firebase/firestore';
 import { RootState } from '../../app/store';
+import { POST_PER_PAGE } from '../../constant';
 import { db, getUserWithUID, postsCollectionRef } from '../../firebase';
 import { CommentType, PostType } from '../../types';
 import { User } from '../user/userSlice';
 
-const getPosts = async () => {
-  const querySnapshot = await getDocs(postsCollectionRef);
+interface GetPostsType {
+  lastPostDoc?: DocumentData | null;
+  currentPosts?: PostType[] | null;
+}
 
-  const posts = [] as PostType[];
+const getPosts = async (props?: GetPostsType) => {
+  const q = props?.lastPostDoc
+    ? query(
+        postsCollectionRef,
+        limit(POST_PER_PAGE),
+        orderBy('createdAt', 'desc'),
+        startAfter(props.lastPostDoc),
+      )
+    : query(
+        postsCollectionRef,
+        limit(POST_PER_PAGE),
+        orderBy('createdAt', 'desc'),
+      );
+
+  const querySnapshot = await getDocs(q);
+
+  let posts = props?.currentPosts || [];
 
   const docs = querySnapshot.docs;
 
@@ -24,18 +45,24 @@ const getPosts = async () => {
 
     const userData = await getUserWithUID(postData.uid);
 
-    posts.push({
-      ...postData,
-      displayName: userData?.displayName,
-      documentID: docs[i].id,
-      photoURL: userData?.photoURL,
-    });
+    posts = [
+      ...posts,
+      {
+        ...postData,
+        displayName: userData?.displayName,
+        documentID: docs[i].id,
+        photoURL: userData?.photoURL,
+      },
+    ];
   }
 
-  return posts.sort(
-    (p1, p2) =>
-      new Date(p2.createdAt).getTime() - new Date(p1.createdAt).getTime(),
-  );
+  return {
+    posts: posts.sort(
+      (p1, p2) =>
+        new Date(p2.createdAt).getTime() - new Date(p1.createdAt).getTime(),
+    ),
+    lastPostDoc: querySnapshot.docs[querySnapshot.docs.length - 1],
+  };
 };
 
 const getSavedPosts = async (uid: string) => {
@@ -142,10 +169,19 @@ const getPostByID = async (id: string) => {
   return null;
 };
 
-export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
-  const posts = await getPosts();
-  return posts;
-});
+export const fetchPosts = createAsyncThunk(
+  'posts/fetchPosts',
+  async (props?: GetPostsType) => {
+    if (props) {
+      const res = await getPosts(props);
+      return res;
+    }
+
+    const res = await getPosts();
+
+    return res;
+  },
+);
 
 export const fetchSavedPosts = createAsyncThunk(
   'posts/fetchSavedPosts',
@@ -187,6 +223,8 @@ interface PostsProps {
   comments: CommentType[];
   savedPosts: PostType[];
   postLoading: boolean;
+  myPostLoading: boolean;
+  lastPostDoc: DocumentData | null;
 }
 
 const initialState: PostsProps = {
@@ -197,6 +235,8 @@ const initialState: PostsProps = {
   comments: [],
   savedPosts: [],
   postLoading: true,
+  myPostLoading: true,
+  lastPostDoc: null,
 };
 
 const postSlice = createSlice({
@@ -215,10 +255,16 @@ const postSlice = createSlice({
     setPostLoading: (state, { payload }: PayloadAction<boolean>) => {
       state.postLoading = payload;
     },
+    setLastPostDoc: (state, { payload }: PayloadAction<DocumentData>) => {
+      state.lastPostDoc = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
+      const { posts, lastPostDoc } = action.payload;
+
+      state.posts = posts;
+      state.lastPostDoc = lastPostDoc;
     });
 
     builder.addCase(fetchSavedPosts.fulfilled, (state, action) => {
@@ -233,14 +279,24 @@ const postSlice = createSlice({
       state.currentPost = action.payload;
     });
 
+    builder.addCase(fetchPostsByUserID.pending, (state, action) => {
+      state.myPostLoading = true;
+    });
+
     builder.addCase(fetchPostsByUserID.fulfilled, (state, action) => {
       state.postsByUserID = action.payload;
+      state.myPostLoading = false;
     });
   },
 });
 
-export const { setPosts, setCurrentPost, setPostsByUserID, setPostLoading } =
-  postSlice.actions;
+export const {
+  setPosts,
+  setCurrentPost,
+  setPostsByUserID,
+  setPostLoading,
+  setLastPostDoc,
+} = postSlice.actions;
 export const selectPosts = (state: RootState) => state.post.posts;
 export const selectCurrentPost = (state: RootState) => state.post.currentPost;
 export const selectPostsByUserID = (state: RootState) =>
@@ -248,5 +304,8 @@ export const selectPostsByUserID = (state: RootState) =>
 export const selectPopularPosts = (state: RootState) => state.post.polularPosts;
 export const selectSavedPosts = (state: RootState) => state.post.savedPosts;
 export const selectPostLoading = (state: RootState) => state.post.postLoading;
+export const selectLastPostDoc = (state: RootState) => state.post.lastPostDoc;
+export const selectMyPostLoading = (state: RootState) =>
+  state.post.myPostLoading;
 
 export default postSlice.reducer;

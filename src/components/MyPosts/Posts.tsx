@@ -6,14 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
 import { showAlert } from '../../features/alert/alertSlice';
 import {
-  selectPostLoading,
+  selectMyPostLoading,
   selectPosts,
   selectPostsByUserID,
   setPostLoading,
   setPosts,
   setPostsByUserID,
 } from '../../features/post/postSlice';
-import { selectUser, selectUserLoading } from '../../features/user/userSlice';
+import { selectUser } from '../../features/user/userSlice';
 import { db, getUserWithUID } from '../../firebase';
 
 const Posts = () => {
@@ -23,8 +23,7 @@ const Posts = () => {
   const postsByUserID = useAppSelector(selectPostsByUserID);
   const posts = useAppSelector(selectPosts);
 
-  const userLoading = useAppSelector(selectUserLoading);
-  const postLoading = useAppSelector(selectPostLoading);
+  const myPostLoading = useAppSelector(selectMyPostLoading);
   const user = useAppSelector(selectUser);
 
   async function handleDeleteClick(postID?: string) {
@@ -59,7 +58,7 @@ const Posts = () => {
     if (postsByUserID) dispatch(setPostLoading(false));
   }, [postsByUserID]);
 
-  if (postLoading)
+  if (myPostLoading)
     return (
       <div className='overflow-hidden'>
         {[0, 1, 2].map((i) => {

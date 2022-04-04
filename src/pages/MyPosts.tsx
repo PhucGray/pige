@@ -7,6 +7,7 @@ import { selectUser } from '../features/user/userSlice';
 const MyPosts = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+
   useEffect(() => {
     if (user?.uid) {
       dispatch(fetchPostsByUserID(user));
