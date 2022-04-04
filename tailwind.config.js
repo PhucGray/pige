@@ -13,7 +13,6 @@ module.exports = {
       animation: {
         'count-down': 'count-down 4s linear forwards',
         disappear: 'disappear 1s 4s ease-out forwards',
-        write: 'write 1.5s infinite linear alternate-reverse',
       },
       keyframes: {
         'count-down': {
@@ -29,27 +28,8 @@ module.exports = {
             opacity: 0,
           },
         },
-        write: {
-          '0%': {
-            transform: 'rotate(0deg)',
-          },
-          '50%': {
-            transform: 'rotate(-45deg)',
-          },
-          '100%': {
-            transform: 'rotate(-90deg)',
-          },
-        },
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    plugin(function ({ addBase, theme }) {
-      addBase({
-        h1: { fontWeight: 'bold', fontSize: '30px' },
-        h2: { fontWeight: 'bold', fontSize: '18px' },
-      });
-    }),
-  ],
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 };

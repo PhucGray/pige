@@ -22,6 +22,14 @@
   .content img {
     @apply mx-auto;
   }
+
+  h1 {
+    @apply font-bold text-[30px] mt-[10px] mb-[10px];
+  }
+
+  h2 {
+    @apply font-bold text-[18px] mt-[5px] mb-[5px];
+  }
 }
 
 @layer components {
@@ -36,4 +44,13 @@
   .error-message {
     @apply text-red-500 italic text-left;
   }
+}
+
+pre {
+  border-radius: 0px !important;
+}
+
+/* pre line-height */
+.public-DraftStyleDefault-block.public-DraftStyleDefault-ltr {
+  margin: 3px 0;
 }
