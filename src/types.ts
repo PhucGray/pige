@@ -1,5 +1,3 @@
-import { User } from './features/user/userSlice';
-
 export interface PostType {
   uid: string;
   title: string;
@@ -9,7 +7,7 @@ export interface PostType {
 
   likes: string[];
   comments: CommentType[];
-  searchKeywords: string[]
+  searchKeywords: string[];
 
   documentID?: string;
   displayName?: string;

@@ -54,7 +54,7 @@ const Search = () => {
       </p>
 
       <div>
-        <PostsList posts={posts} />
+        <PostsList />
       </div>
     </div>
   );
