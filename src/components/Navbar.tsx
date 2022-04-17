@@ -55,7 +55,7 @@ const Navbar = () => {
   return (
     <div
       className={`fixed top-0 left-0 right-0 h-[60px] 
-      z-[99] border-b-[1px] bg-white
+      z-40 border-b-[1px] bg-white
       ${isLaptopUp ? 'px-[40px] gap-[20px]' : 'px-[20px]'}`}>
       <div className='max-w-[1200px] h-full mx-auto my-auto flex items-center justify-between'>
         {!isSearching && <Link to='/'>pige</Link>}

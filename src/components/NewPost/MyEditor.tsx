@@ -261,7 +261,7 @@ const MyEditor = ({ action }: EditorProps) => {
   return (
     <>
       {preview && (
-        <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-50 space-y-[10px]'>
+        <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-30 space-y-[10px]'>
           <div className='flex justify-center space-x-3 mt-[10px]'>
             <button
               onClick={() => setPreview(false)}
