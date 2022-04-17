@@ -36,7 +36,6 @@ const App = () => {
 
         if (userData) {
           dispatch(setUser(userData));
-          dispatch(setPostLoading(true));
           dispatch(fetchSavedPosts(userData.uid));
         }
       } else {
