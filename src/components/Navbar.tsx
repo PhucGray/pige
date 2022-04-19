@@ -58,7 +58,17 @@ const Navbar = () => {
       z-40 border-b-[1px] bg-white
       ${isLaptopUp ? 'px-[40px] gap-[20px]' : 'px-[20px]'}`}>
       <div className='max-w-[1200px] h-full mx-auto my-auto flex items-center justify-between'>
-        {!isSearching && <Link to='/'>pige</Link>}
+        {!isSearching && (
+          <div
+            className='flex text-[20px] cursor-pointer'
+            onClick={() => navigate('/')}>
+            <div className='text-[#48c2e0] relative font-semibold font-p'>
+              <div>p</div>
+              <div className='absolute bottom-[8px] left-0 h-[1px]'>^</div>
+            </div>
+            <div className='font-arial'>ige</div>
+          </div>
+        )}
 
         {isSearching && (
           <button

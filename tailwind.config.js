@@ -29,6 +29,10 @@ module.exports = {
           },
         },
       },
+      fontFamily: {
+        arial: ['Arial', 'Helvetica', 'sans-serif'],
+        p: ['Courier New', 'Courier', 'monospace'],
+      },
     },
   },
   plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
