@@ -14,6 +14,10 @@ const MyPosts = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    document.title = 'Bài viết của tôi';
+  }, []);
+
   return (
     <div>
       <div className='text-[30px] font-bold pt-[20px] px-[20px] lg:px-[40px]'>

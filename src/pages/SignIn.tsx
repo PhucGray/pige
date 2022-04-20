@@ -1,5 +1,11 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { FormEvent, MutableRefObject, useRef, useState } from 'react';
+import {
+  FormEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { SiReact } from 'react-icons/si';
 import { Link, useNavigate } from 'react-router-dom';
@@ -105,6 +111,10 @@ const SignIn = () => {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    document.title = 'Đăng nhập';
+  }, []);
 
   return (
     <div className='pt-[20px] px-[20px] md:px-[40px]'>

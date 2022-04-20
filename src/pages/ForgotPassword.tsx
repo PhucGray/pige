@@ -2,7 +2,13 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { FormEvent, MutableRefObject, useRef, useState } from 'react';
+import {
+  FormEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { SiReact } from 'react-icons/si';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -54,6 +60,10 @@ const ForgotPassword = () => {
 
     setLoading(false);
   }
+
+  useEffect(() => {
+    document.title = 'Quên mật khẩu';
+  }, []);
 
   return (
     <div className='pt-[20px] px-[20px] md:px-[40px]'>

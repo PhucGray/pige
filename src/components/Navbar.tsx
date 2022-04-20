@@ -60,7 +60,7 @@ const Navbar = () => {
       <div className='max-w-[1200px] h-full mx-auto my-auto flex items-center justify-between'>
         {!isSearching && (
           <div
-            className='flex text-[20px] cursor-pointer'
+            className='flex text-[20px] cursor-pointer select-none'
             onClick={() => navigate('/')}>
             <div className='text-[#48c2e0] relative font-semibold font-p'>
               <div>p</div>

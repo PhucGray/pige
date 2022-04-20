@@ -7,7 +7,7 @@ import {
   selectSavedPosts,
   setPostLoading,
 } from '../features/post/postSlice';
-import { selectUser, selectUserLoading } from '../features/user/userSlice';
+import { selectUser } from '../features/user/userSlice';
 
 const Bookmark = () => {
   const navigate = useNavigate();
@@ -16,12 +16,15 @@ const Bookmark = () => {
   const savedPosts = useAppSelector(selectSavedPosts);
   const user = useAppSelector(selectUser);
 
-  const userLoading = useAppSelector(selectUserLoading);
   const postLoading = useAppSelector(selectPostLoading);
 
   useEffect(() => {
     if (savedPosts) dispatch(setPostLoading(false));
   }, [savedPosts]);
+
+  useEffect(() => {
+    document.title = 'Bài viết đã lưu';
+  }, []);
 
   if (postLoading)
     return (
