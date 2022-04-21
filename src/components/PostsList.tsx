@@ -17,8 +17,13 @@ import {
 } from '../features/post/postSlice';
 import { selectUser, setUser } from '../features/user/userSlice';
 import { db } from '../firebase';
+import { PostType } from '../types';
 
-const PostsList = () => {
+interface PostsListType {
+  postsProps?: PostType[];
+}
+
+const PostsList = ({ postsProps }: PostsListType) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -74,6 +79,8 @@ const PostsList = () => {
     if (posts) dispatch(setPostLoading(false));
   }, [posts]);
 
+  const currentPosts = postsProps || posts;
+
   if (postLoading)
     return (
       <div className='flex-1 overflow-hidden'>
@@ -112,17 +119,17 @@ const PostsList = () => {
 
   return (
     <div className='flex-1 overflow-auto'>
-      <InfiniteScroll
-        dataLength={dataLength}
-        next={fetchMorePosts}
-        hasMore={true}
-        loader={
-          <div className='flex justify-center mt-[10px]'>
-            <CgSearchLoading size={35} />
-          </div>
-        }>
-        {posts &&
-          posts.map(
+      {currentPosts && currentPosts.length > 0 ? (
+        <InfiniteScroll
+          dataLength={dataLength}
+          next={fetchMorePosts}
+          hasMore={true}
+          loader={
+            <div className='flex justify-center mt-[10px]'>
+              <CgSearchLoading size={35} />
+            </div>
+          }>
+          {currentPosts.map(
             ({
               createdAt,
               readTime,
@@ -189,7 +196,10 @@ const PostsList = () => {
               );
             },
           )}
-      </InfiniteScroll>
+        </InfiniteScroll>
+      ) : (
+        <div className='text-center mt-3'>Không có kết quả</div>
+      )}
     </div>
   );
 };

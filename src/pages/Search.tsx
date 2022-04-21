@@ -22,6 +22,7 @@ const Search = () => {
     const postsDocs = await getDocs(q);
 
     if (postsDocs.empty) {
+      setPosts([]);
     } else {
       const posts = [] as PostType[];
 
@@ -54,7 +55,7 @@ const Search = () => {
       </p>
 
       <div>
-        <PostsList />
+        <PostsList postsProps={posts} />
       </div>
     </div>
   );
