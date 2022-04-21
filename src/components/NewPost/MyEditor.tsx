@@ -258,6 +258,17 @@ const MyEditor = ({ action }: EditorProps) => {
     };
   }, []);
 
+  //
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.focusEditor();
+
+      editorRef.current.componentDidCatch = () => {
+        alert('run');
+      };
+    }
+  }, [editorRef]);
+
   return (
     <div className='max-h-screen overflow-hidden'>
       {preview && (
@@ -365,12 +376,11 @@ const MyEditor = ({ action }: EditorProps) => {
       </div>
 
       <Editor
+        wrapperClassName='wrapper'
         ref={editorRef}
         editorState={editorState}
         onEditorStateChange={onEditorStateChange}
         placeholder='Hãy viết điều gì đó . . . '
-        // wrapperStyle={{ overflowY: 'auto' }}
-        // editorStyle={{ overflowY: 'auto' }}
         toolbar={toolbar}
         hashtag={{
           trigger: '#',

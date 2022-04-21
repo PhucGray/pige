@@ -275,11 +275,6 @@ const Post = () => {
               <Editor
                 toolbarHidden
                 readOnly
-                toolbar={{
-                  image: {
-                    alignmentEnabled: false,
-                  },
-                }}
                 editorState={editorState}
                 hashtag={{
                   separator: ' ',

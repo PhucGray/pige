@@ -59,13 +59,13 @@ pre {
   margin: 3px 0;
 }
 
-.DraftEditor-editorContainer {
+.wrapper .DraftEditor-editorContainer {
   max-height: calc(100vh - 120px);
   overflow: auto;
 }
 
 @media screen and (max-width: 1200px) {
-  .DraftEditor-editorContainer {
+  .wrapper .DraftEditor-editorContainer {
     max-height: calc(100vh - 300px);
   }
 }
