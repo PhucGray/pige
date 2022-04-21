@@ -6,9 +6,9 @@ const NewPost = () => {
     document.title = 'Viết bài';
   }, []);
   return (
-    <div className='flex-1 flex flex-col overflow-hidden'>
+    <>
       <MyEditor action='add' />
-    </div>
+    </>
   );
 };
 

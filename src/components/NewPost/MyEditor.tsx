@@ -7,7 +7,7 @@ import {
 import draftToHtml from 'draftjs-to-html';
 import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { Editor } from 'react-draft-wysiwyg';
+import { Editor, RawDraftContentState } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
@@ -259,10 +259,10 @@ const MyEditor = ({ action }: EditorProps) => {
   }, []);
 
   return (
-    <>
+    <div className='max-h-screen overflow-hidden'>
       {preview && (
-        <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-30 space-y-[10px]'>
-          <div className='flex justify-center space-x-3 mt-[10px]'>
+        <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-30'>
+          <div className='absolute right-[20px] top-[10px] flex justify-center space-x-3 z-30'>
             <button
               onClick={() => setPreview(false)}
               className='px-[30px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary'>
@@ -278,7 +278,7 @@ const MyEditor = ({ action }: EditorProps) => {
             </button>
           </div>
 
-          <div className='bg-white h-screen w-screen overflow-auto'>
+          <div className='bg-white h-full w-screen overflow-auto'>
             <div className='w-[90%] mx-auto'>
               <div className='mt-[20px] text-[35px] font-semibold mb-[15px]'>
                 {title}
@@ -368,16 +368,9 @@ const MyEditor = ({ action }: EditorProps) => {
         ref={editorRef}
         editorState={editorState}
         onEditorStateChange={onEditorStateChange}
-        wrapperStyle={{
-          overflow: 'auto',
-          height: '100%',
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-        editorStyle={{ flex: 1 }}
-        editorClassName='shadow-sm px-[20px]'
         placeholder='Hãy viết điều gì đó . . . '
+        // wrapperStyle={{ overflowY: 'auto' }}
+        // editorStyle={{ overflowY: 'auto' }}
         toolbar={toolbar}
         hashtag={{
           trigger: '#',
@@ -390,7 +383,7 @@ const MyEditor = ({ action }: EditorProps) => {
         disabled
         value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
       />
-    </>
+    </div>
   );
 };
 
