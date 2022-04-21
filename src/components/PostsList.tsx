@@ -1,5 +1,4 @@
 import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
-import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { BsBookmarkPlus, BsSuitHeartFill } from 'react-icons/bs';
 import { CgSearchLoading } from 'react-icons/cg';
@@ -18,6 +17,7 @@ import {
 import { selectUser, setUser } from '../features/user/userSlice';
 import { db } from '../firebase';
 import { PostType } from '../types';
+import { formatTime } from '../utils/customMoment';
 
 interface PostsListType {
   postsProps?: PostType[];
@@ -157,9 +157,7 @@ const PostsList = ({ postsProps }: PostsListType) => {
                       <div className='font-semibold'>{displayName}</div>
                     </div>
 
-                    <div className='text-gray-400'>
-                      {moment(createdAt).format('L')}
-                    </div>
+                    <div className='text-gray-400'>{formatTime(createdAt)}</div>
                   </div>
 
                   <div className='text-[20px] font-semibold'>{title}</div>

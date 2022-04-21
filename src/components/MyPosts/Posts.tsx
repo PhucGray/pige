@@ -1,5 +1,4 @@
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import moment from 'moment';
 import { useEffect } from 'react';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +14,7 @@ import {
 } from '../../features/post/postSlice';
 import { selectUser } from '../../features/user/userSlice';
 import { db, getUserWithUID } from '../../firebase';
+import { formatTime } from '../../utils/customMoment';
 
 const Posts = () => {
   const navigate = useNavigate();
@@ -90,9 +90,7 @@ const Posts = () => {
               className='border-b-[1px] mb-[30px] p-[5px] lg:p-[10px] hover:bg-slate-100 cursor-pointer space-y-1'
               onClick={() => navigate(`/post/${documentID}`)}>
               <div className='flex flex-wrap items-center justify-between'>
-                <div className='text-gray-400'>
-                  {moment(createdAt).format('L')}
-                </div>
+                <div className='text-gray-400'>{formatTime(createdAt)}</div>
 
                 <div className='flex'>
                   <button

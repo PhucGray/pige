@@ -95,7 +95,7 @@ const getSavedPosts = async (uid: string) => {
 };
 
 const getPopularPosts = async () => {
-  const q = query(postsCollectionRef, orderBy('likes', 'desc'), limit(3));
+  const q = query(postsCollectionRef);
 
   const posts = [] as PostType[];
 
@@ -120,7 +120,7 @@ const getPopularPosts = async () => {
     }
   }
 
-  return posts;
+  return posts.sort((a, b) => b.likes.length - a.likes.length);
 };
 
 const getPostsByUserID = async (user: User) => {

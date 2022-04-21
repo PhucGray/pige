@@ -47,13 +47,13 @@ const Sidebar = () => {
           <div className='h-[2px] flex-1 bg-gray-300'></div>
         </div>
 
-        <div className='group cursor-pointer mt-[20px] pl-[10px] space-y-2'>
+        <div className='cursor-pointer mt-[20px] pl-[10px] space-y-2'>
           {polularPosts &&
             polularPosts.map((p) => (
               <div
                 key={p.documentID}
                 onClick={() => navigate(`/post/${p.documentID}`)}
-                className='border-b-[1px] pb-[10px]'>
+                className='group border-b-[1px] pb-[10px]'>
                 <div className='font-semibold group-hover:text-primary'>
                   {p.title}
                 </div>

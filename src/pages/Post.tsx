@@ -1,7 +1,6 @@
 import { ContentState, EditorState } from 'draft-js';
 import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import htmlToDraft from 'html-to-draftjs';
-import moment from 'moment';
 import { FormEvent, useEffect, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import { AiOutlineClose } from 'react-icons/ai';
@@ -18,6 +17,7 @@ import {
 import { selectUser, setUser } from '../features/user/userSlice';
 import { db } from '../firebase';
 import { CommentType } from '../types';
+import { formatTime } from '../utils/customMoment';
 
 const Post = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +29,6 @@ const Post = () => {
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [comment, setComment] = useState('');
-  const [commentLoading, setCommentLoading] = useState(false);
   const [showComment, setShowComment] = useState(false);
 
   async function handleLike() {
@@ -87,8 +86,6 @@ const Post = () => {
   async function handleComment(e: FormEvent) {
     e.preventDefault();
 
-    setCommentLoading(true);
-
     if (!comment.trim()) return setComment('');
 
     if (user?.documentID && currentPost?.documentID) {
@@ -124,9 +121,7 @@ const Post = () => {
       dispatch(fetchPostByID(currentPost.documentID));
 
       setComment('');
-      setCommentLoading(false);
     } else {
-      setCommentLoading(false);
     }
   }
 
@@ -242,7 +237,7 @@ const Post = () => {
               <div>
                 <div className='font-semibold'>{currentPost.displayName}</div>
                 <div className='flex items-center gap-[10px]'>
-                  <div>{moment(currentPost.createdAt).format('L')}</div>
+                  <div>{formatTime(currentPost.createdAt)}</div>
                   <div>-</div>
                   <div>{currentPost.readTime} phút đọc</div>
                 </div>

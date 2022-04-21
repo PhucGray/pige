@@ -4,15 +4,15 @@
 
 @layer base {
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply rounded-[20px] bg-slate-200;
+    @apply bg-slate-200;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-[20px] bg-primary;
+    @apply bg-primary;
   }
 
   ::-webkit-scrollbar-thumb:hover {
