@@ -76,16 +76,11 @@ const SignInWithSocial = () => {
   return (
     <div className='flex justify-center gap-[10px]'>
       <button
-        onClick={() => signInWithSocial('facebook')}
-        type='button'
-        className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-        <BsFacebook color='#4267B2' />
-      </button>
-      <button
         onClick={() => signInWithSocial('google')}
         type='button'
-        className='ring-1 ring-slate-400 h-[40px] w-[40px] text-[25px] flex justify-center items-center rounded-full'>
-        <FcGoogle />
+        className='ring-1 ring-slate-400 h-[40px] w-full  flex gap-3 justify-center items-center rounded-full'>
+        <FcGoogle size={25} />
+        <div>Đăng nhập với Google</div>
       </button>
     </div>
   );

@@ -130,6 +130,8 @@ const getPostsByUserID = async (user: User) => {
 
   const docs = querySnapshot.docs;
 
+  console.log(user.documentID);
+
   for (let i = 0; i < docs.length; i++) {
     const postData = docs[i].data() as PostType;
     const postID = docs[i].id;
@@ -211,6 +213,7 @@ export const fetchPostsByUserID = createAsyncThunk(
   'posts/fetchPostsByUserID',
   async (user: User) => {
     const posts = await getPostsByUserID(user);
+
     return posts;
   },
 );
