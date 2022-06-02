@@ -3,102 +3,102 @@ import {
   convertFromHTML,
   convertToRaw,
   EditorState,
-} from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
-import { addDoc, arrayUnion, doc, updateDoc } from 'firebase/firestore';
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { Editor, RawDraftContentState } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../app/hooks/reduxHooks';
-import { showAlert } from '../../features/alert/alertSlice';
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import { addDoc, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { Editor, RawDraftContentState } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/hooks/reduxHooks";
+import { showAlert } from "../../features/alert/alertSlice";
 import {
   fetchPostByID,
   fetchPosts,
   selectCurrentPost,
   setCurrentPost,
-} from '../../features/post/postSlice';
-import { selectUser, setUser } from '../../features/user/userSlice';
-import { db, postsCollectionRef } from '../../firebase';
-import '../../styles/toolbar.css';
-import { PostType } from '../../types';
-import { createCombineWords } from '../../utils/generateKeywords';
+} from "../../features/post/postSlice";
+import { selectUser, setUser } from "../../features/user/userSlice";
+import { db, postsCollectionRef } from "../../firebase";
+import "../../styles/toolbar.css";
+import { PostType } from "../../types";
+import { createCombineWords } from "../../utils/generateKeywords";
 
 interface EditorProps {
-  action: 'add' | 'edit';
+  action: "add" | "edit";
 }
 
 const toolbar = {
   options: [
-    'blockType',
-    'inline',
-    'fontSize',
-    'list',
-    'textAlign',
-    'emoji',
-    'image',
-    'history',
+    "blockType",
+    "inline",
+    "fontSize",
+    "list",
+    "textAlign",
+    "emoji",
+    "image",
+    "history",
   ],
   inline: {
     inDropdown: false,
     options: [
-      'bold',
-      'italic',
-      'underline',
-      'strikethrough',
-      'monospace',
-      'superscript',
-      'subscript',
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "monospace",
+      "superscript",
+      "subscript",
     ],
     bold: {
-      icon: '/bold.png',
+      icon: "/bold.png",
     },
-    italic: { icon: '/italic.png' },
-    underline: { icon: '/underline.png' },
-    strikethrough: { icon: '/strikethrough.png' },
-    monospace: { icon: '/monospace.png' },
-    superscript: { icon: '/superscript.png' },
-    subscript: { icon: '/subscript.png' },
+    italic: { icon: "/italic.png" },
+    underline: { icon: "/underline.png" },
+    strikethrough: { icon: "/strikethrough.png" },
+    monospace: { icon: "/monospace.png" },
+    superscript: { icon: "/superscript.png" },
+    subscript: { icon: "/subscript.png" },
   },
   emoji: {
-    icon: '/emoji.png',
+    icon: "/emoji.png",
   },
   list: {
     unordered: {
-      icon: '/unordered.png',
+      icon: "/unordered.png",
     },
     ordered: {
-      icon: '/ordered.png',
+      icon: "/ordered.png",
     },
     indent: {
-      className: 'd-none',
+      className: "d-none",
     },
     outdent: {
-      className: 'd-none',
+      className: "d-none",
     },
   },
   textAlign: {
     left: {
-      icon: '/left.png',
+      icon: "/left.png",
     },
     right: {
-      icon: '/right.png',
+      icon: "/right.png",
     },
     center: {
-      icon: '/center.png',
+      icon: "/center.png",
     },
     justify: {
-      icon: '/justify.png',
+      icon: "/justify.png",
     },
   },
   image: {
-    icon: '/image.png',
+    icon: "/image.png",
     alignmentEnabled: false,
   },
   blockType: {
     inDropdown: true,
-    options: ['Normal', 'H1', 'H2', 'Blockquote', 'Code'],
-    className: 'blockType',
+    options: ["Normal", "H1", "H2", "Blockquote", "Code"],
+    className: "blockType",
   },
 };
 
@@ -117,8 +117,8 @@ const MyEditor = ({ action }: EditorProps) => {
     EditorState.createEmpty(),
   );
   const [preview, setPreview] = useState(false);
-  const [title, setTitle] = useState('');
-  const [readTime, setReadTime] = useState('');
+  const [title, setTitle] = useState("");
+  const [readTime, setReadTime] = useState("");
 
   function onEditorStateChange(editorState: EditorState) {
     setEditorState(editorState);
@@ -129,19 +129,19 @@ const MyEditor = ({ action }: EditorProps) => {
 
     if (!title.trim())
       return dispatch(
-        showAlert({ type: 'error', message: 'Vui lòng nhập tiêu đề bài viết' }),
+        showAlert({ type: "error", message: "Vui lòng nhập tiêu đề bài viết" }),
       );
 
     if (!readTime.trim())
       return dispatch(
-        showAlert({ type: 'error', message: 'Vui lòng nhập thời gian đọc' }),
+        showAlert({ type: "error", message: "Vui lòng nhập thời gian đọc" }),
       );
 
     if (!content.trim())
       return dispatch(
         showAlert({
-          type: 'error',
-          message: 'Vui lòng nhập nội dung cho bài viết',
+          type: "error",
+          message: "Vui lòng nhập nội dung cho bài viết",
         }),
       );
 
@@ -161,7 +161,7 @@ const MyEditor = ({ action }: EditorProps) => {
     const newPostDoc = await addDoc(postsCollectionRef, newPost);
 
     if (user?.documentID) {
-      const userRef = doc(db, 'users', user.documentID);
+      const userRef = doc(db, "users", user.documentID);
       await updateDoc(userRef, {
         posts: arrayUnion(newPostDoc.id),
       });
@@ -174,12 +174,12 @@ const MyEditor = ({ action }: EditorProps) => {
     }
 
     setEditorState(EditorState.createEmpty());
-    setReadTime('');
-    setTitle('');
+    setReadTime("");
+    setTitle("");
 
     dispatch(fetchPosts());
 
-    dispatch(showAlert({ type: 'success', message: 'Thêm bài thành công' }));
+    dispatch(showAlert({ type: "success", message: "Thêm bài thành công" }));
   }
 
   async function handleEdit() {
@@ -187,25 +187,25 @@ const MyEditor = ({ action }: EditorProps) => {
 
     if (!title.trim())
       return dispatch(
-        showAlert({ type: 'error', message: 'Vui lòng nhập tiêu đề bài viết' }),
+        showAlert({ type: "error", message: "Vui lòng nhập tiêu đề bài viết" }),
       );
 
     if (!readTime.trim())
       return dispatch(
-        showAlert({ type: 'error', message: 'Vui lòng nhập thời gian đọc' }),
+        showAlert({ type: "error", message: "Vui lòng nhập thời gian đọc" }),
       );
 
     if (!content.trim())
       return dispatch(
         showAlert({
-          type: 'error',
-          message: 'Vui lòng nhập nội dung cho bài viết',
+          type: "error",
+          message: "Vui lòng nhập nội dung cho bài viết",
         }),
       );
 
     if (!currentPost?.documentID) return;
 
-    const postRef = doc(db, 'posts', currentPost.documentID);
+    const postRef = doc(db, "posts", currentPost.documentID);
 
     await updateDoc(postRef, {
       content: textareaRef.current.value,
@@ -214,23 +214,23 @@ const MyEditor = ({ action }: EditorProps) => {
     });
 
     setEditorState(EditorState.createEmpty());
-    setReadTime('');
-    setTitle('');
+    setReadTime("");
+    setTitle("");
 
     dispatch(fetchPosts());
     dispatch(
       showAlert({
-        type: 'success',
+        type: "success",
         message:
-          action === 'add' ? 'Thêm bài thành công' : 'Sửa bài thành công',
+          action === "add" ? "Thêm bài thành công" : "Sửa bài thành công",
       }),
     );
-    navigate('/my-posts');
+    navigate("/my-posts");
   }
 
   // EDIT POST
   useEffect(() => {
-    if (action === 'edit') {
+    if (action === "edit") {
       const { id } = location.state as { id: string };
       dispatch(fetchPostByID(id));
     }
@@ -264,34 +264,34 @@ const MyEditor = ({ action }: EditorProps) => {
       editorRef.current.focusEditor();
 
       editorRef.current.componentDidCatch = () => {
-        alert('run');
+        alert("run");
       };
     }
   }, [editorRef]);
 
   return (
-    <div className='max-h-screen overflow-hidden'>
+    <div className="h-screen max-h-[100%] overflow-hidden px-[20px] bg-gray-300 flex flex-col">
       {preview && (
-        <div className='fixed top-0 left-0 h-screen w-screen bg-shadow z-30'>
-          <div className='absolute right-[20px] top-[10px] flex justify-center space-x-3 z-30'>
+        <div className="fixed top-0 left-0 h-screen w-screen bg-shadow z-30">
+          <div className="absolute right-[20px] top-[10px] flex justify-center space-x-3 z-30">
             <button
               onClick={() => setPreview(false)}
-              className='px-[30px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary'>
-              Tiếp tục {action === 'add' ? 'viết' : 'sửa'}
+              className="px-[30px] h-[40px] bg-white text-primary ring-1 ring-primary hover:bg-lightPrimary">
+              Tiếp tục {action === "add" ? "viết" : "sửa"}
             </button>
             <button
               onClick={() => {
-                action === 'add' ? handlePost() : handleEdit();
+                action === "add" ? handlePost() : handleEdit();
                 setPreview(false);
               }}
-              className='px-[40px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
-              {action === 'add' ? 'Đăng bài' : 'Sửa bài'}
+              className="px-[40px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary">
+              {action === "add" ? "Đăng bài" : "Sửa bài"}
             </button>
           </div>
 
-          <div className='bg-white h-full w-screen overflow-auto'>
-            <div className='w-[90%] mx-auto'>
-              <div className='mt-[20px] text-[35px] font-semibold mb-[15px]'>
+          <div className="bg-white h-full w-screen overflow-auto">
+            <div className="w-[90%] mx-auto">
+              <div className="mt-[20px] text-[35px] font-semibold mb-[15px]">
                 {title}
               </div>
 
@@ -305,8 +305,8 @@ const MyEditor = ({ action }: EditorProps) => {
                 }}
                 editorState={editorState}
                 hashtag={{
-                  separator: ' ',
-                  trigger: '#',
+                  separator: " ",
+                  trigger: "#",
                 }}
               />
             </div>
@@ -314,82 +314,82 @@ const MyEditor = ({ action }: EditorProps) => {
         </div>
       )}
 
-      <div className='flex flex-wrap-reverse justify-between items-center gap-[20px] px-[40px] py-[10px]'>
+      <div className="bg-white flex flex-wrap-reverse justify-between items-center gap-[20px] px-[40px] py-[10px]">
         <input
-          type='number'
-          min='0'
+          type="number"
+          min="0"
           onKeyDown={(e) => {
             if (
               ![
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                'Backspace',
-                'ArrowLeft',
-                'ArrowRight',
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "Backspace",
+                "ArrowLeft",
+                "ArrowRight",
               ].includes(e.key)
             )
               e.preventDefault();
           }}
-          placeholder='Thời gian đọc (phút)'
-          className='form-control flex-1 max-w-[185px]'
+          placeholder="Thời gian đọc (phút)"
+          className="form-control flex-1 max-w-[185px]"
           value={readTime}
           onChange={(e) => setReadTime(e.target.value)}
           required
         />
 
         <input
-          type='text'
-          placeholder='Tiêu đề của bài viêt'
-          className='form-control flex-1 max-w-[500px]'
+          type="text"
+          placeholder="Tiêu đề của bài viêt"
+          className="form-control flex-1 max-w-[500px]"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
 
-        <div className='space-x-4 ml-auto'>
+        <div className="space-x-4 ml-auto">
           <button
             onClick={() => navigate(-1)}
-            className='rounded-[5px] w-[120px] h-[40px] text-primary ring-1 ring-primary hover:bg-lightPrimary'>
+            className="rounded-[5px] w-[120px] h-[40px] text-primary ring-1 ring-primary hover:bg-lightPrimary">
             Thoát
           </button>
 
           <button
             onClick={() => setPreview(true)}
-            className='rounded-[5px] w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600'>
+            className="rounded-[5px] w-[120px] h-[40px] bg-slate-500 text-white ring-1 ring-slate-500 hover:bg-slate-600 hover:ring-slate-600">
             Xem trước
           </button>
 
           <button
-            onClick={action === 'add' ? handlePost : handleEdit}
-            className='rounded-[5px] w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary'>
-            {action === 'add' ? 'Đăng' : 'Sửa'}
+            onClick={action === "add" ? handlePost : handleEdit}
+            className="rounded-[5px] w-[120px] h-[40px] bg-primary text-white ring-1 ring-primary hover:bg-darkPrimary hover:ring-darkPrimary">
+            {action === "add" ? "Đăng" : "Sửa"}
           </button>
         </div>
       </div>
 
       <Editor
-        wrapperClassName='wrapper'
+        wrapperClassName="wrapper bg-white h-full overflow-hidden px-3"
         ref={editorRef}
         editorState={editorState}
         onEditorStateChange={onEditorStateChange}
-        placeholder='Hãy viết điều gì đó . . . '
+        placeholder="Hãy viết điều gì đó . . . "
         toolbar={toolbar}
         hashtag={{
-          trigger: '#',
+          trigger: "#",
         }}
       />
 
       <textarea
         ref={textareaRef}
-        className='fixed top-[-100vh] opacity-0'
+        className="fixed top-[-100vh] opacity-0"
         disabled
         value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
       />
